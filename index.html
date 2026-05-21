@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Terpadu PPDB - SDN 8 Banawa Selatan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid transparent;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .loader-red { border-top-color: #dc2626; } /* Warna merah */
+        .loader-white { border-top-color: #ffffff; }
+        .loader-large { width: 40px; height: 40px; border-width: 4px; margin: 20px auto; }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Styles untuk Radio Button Jenis Kelamin */
+        .radio-gender-card input[type="radio"]:checked + div {
+            border-color: #dc2626; /* Merah */
+            background-color: #fef2f2; /* Merah sangat pudar */
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+        }
+        .radio-gender-card input[type="radio"]:checked + div .icon-boy { color: #2563eb; }
+        .radio-gender-card input[type="radio"]:checked + div .icon-girl { color: #db2777; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans text-gray-800">
+
+    <nav class="bg-red-700 text-white shadow-lg sticky top-0 z-50 border-b-4 border-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Tulisan Navbar Biasa (Bukan Pintu Rahasia Lagi) -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <div class="bg-white p-1.5 rounded-full shadow-sm">
+                        <svg class="w-7 h-7 text-red-700" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 8.56l-1.222.524a1 1 0 000 1.838l7 3a1 1 0 00.788 0l7-3a1 1 0 000-1.838H16.8l-1.5 1.5-3.036 1.302a3 3 0 01-2.365 0L3.31 8.56zm4.195 4.542l-2.003.859A1.5 1.5 0 004.5 15.353v1.147a1.5 1.5 0 001.5 1.5h8a1.5 1.5 0 001.5-1.5v-1.147a1.5 1.5 0 00-1.002-1.392l-2.003-.859a5 5 0 01-3.99 0z"></path></svg>
+                    </div>
+                    <span class="font-bold text-lg hidden sm:block tracking-wide">PPDB SDN 8 Banawa Selatan</span>
+                </div>
+                
+                <!-- Menu -->
+                <div class="flex space-x-2 sm:space-x-4">
+                    <button onclick="kembaliKeLogin()" id="nav-beranda" class="px-3 py-1.5 sm:px-4 sm:py-2 rounded flex items-center gap-1.5 text-sm font-bold bg-white text-red-700 shadow-sm transition-colors hover:bg-gray-100">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                        Beranda
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+
+        <div id="view-login" class="fade-in block max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-10 border border-gray-100">
+            <div class="bg-red-700 p-8 text-center text-white relative">
+                <!-- Aksen Putih -->
+                <div class="absolute top-0 right-0 w-16 h-16 bg-white opacity-10 rounded-bl-full"></div>
+                
+                <!-- PINTU RAHASIA ADMIN DIPINDAH KE SINI -->
+                <div class="cursor-pointer inline-block rounded-full p-2 hover:bg-red-600 transition-colors group" onclick="switchView('admin-login')" title="Area Panitia">
+                    <svg class="w-16 h-16 mx-auto text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                
+                <h1 class="text-2xl font-bold mt-2">Portal PPDB</h1>
+                <p class="text-red-100 text-sm mt-2 font-medium">Masukkan No WhatsApp Anda untuk Mendaftar atau Mengecek Status Kelulusan.</p>
+            </div>
+
+            <div class="p-8 relative">
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor WhatsApp Aktif <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 font-bold">
+                                +62
+                            </span>
+                            <input type="tel" id="login-nohp" required class="pl-12 w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-0 focus:border-red-500 transition-colors font-medium text-lg" placeholder="81234567890">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Awali dengan angka 8, contoh: 812xxxxxx</p>
+                    </div>
+                    
+                    <button type="submit" id="login-submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-colors flex justify-center items-center">
+                        <span id="login-btnText">Lanjutkan</span>
+                    </button>
+                </form>
+
+                <div id="login-alertBox" class="hidden mt-4 p-4 rounded-lg text-sm text-center border">
+                    <span id="login-alertMsg"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-pendaftaran" class="fade-in hidden max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="bg-red-600 text-white p-6 text-center border-b-4 border-red-700">
+                <h1 class="text-2xl font-bold">Formulir Pendaftaran Siswa Baru</h1>
+                <p class="text-sm mt-1 text-red-100">Lengkapi data di bawah ini dengan benar.</p>
+            </div>
+            <div class="p-8">
+                <form id="regForm" class="space-y-6">
+                    
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-800">Mendaftar menggunakan No. WhatsApp: <strong id="display-wa" class="font-bold"></strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Siswa -->
+                    <div>
+                        <h2 class="text-lg font-bold text-red-700 border-b-2 border-red-100 pb-2 mb-4">1. Data Calon Siswa</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">NISN (Jika Ada)</label>
+                                <input type="text" id="reg-nisn" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 border p-2 bg-gray-50" placeholder="0123456789">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nama Lengkap <span class="text-red-500">*</span></label>
+                                <input type="text" id="reg-nama" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 border p-2 bg-gray-50" placeholder="Nama Sesuai Akta">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Tempat Lahir <span class="text-red-500">*</span></label>
+                                <input type="text" id="reg-tempat_lahir" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 border p-2 bg-gray-50" placeholder="Kota/Kabupaten">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Tanggal Lahir <span class="text-red-500">*</span></label>
+                                <input type="date" id="reg-tanggal_lahir" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 border p-2 bg-gray-50">
+                            </div>
+                            
+                            <!-- Jenis Kelamin -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin <span class="text-red-500">*</span></label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="radio-gender-card cursor-pointer group">
+                                        <input type="radio" name="reg-jenis_kelamin" value="Laki-laki" class="peer sr-only" required>
+                                        <div class="rounded-xl border-2 border-gray-200 p-4 hover:bg-blue-50 transition-all flex flex-col items-center justify-center h-full">
+                                            <div class="w-20 h-20 mb-2 flex items-center justify-center text-gray-400 group-hover:text-blue-500 peer-checked:text-blue-600 transition-colors duration-300">
+                                                <!-- Ikon Laki-laki Standar Universal -->
+                                                <svg class="w-full h-full icon-boy" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C13.6569 4 15 5.34315 15 7C15 8.65685 13.6569 10 12 10C10.3431 10 9 8.65685 9 7C9 5.34315 10.3431 4 12 4ZM8 12C6.89543 12 6 12.8954 6 14V17C6 17.5523 6.44772 18 7 18H8V23C8 23.5523 8.44772 24 9 24H11C11.5523 24 12 23.5523 12 23V18H12V23C12 23.5523 12.4477 24 13 24H15C15.5523 24 16 23.5523 16 23V18H17C17.5523 18 18 17.5523 18 17V14C18 12.8954 17.1046 12 16 12H8Z" />
+                                                </svg>
+                                            </div>
+                                            <span class="font-bold text-gray-700 mt-2 group-hover:text-blue-700 peer-checked:text-blue-800 transition-colors">Laki-laki</span>
+                                        </div>
+                                    </label>
+                                    <label class="radio-gender-card cursor-pointer group">
+                                        <input type="radio" name="reg-jenis_kelamin" value="Perempuan" class="peer sr-only">
+                                        <div class="rounded-xl border-2 border-gray-200 p-4 hover:bg-pink-50 transition-all flex flex-col items-center justify-center h-full">
+                                            <div class="w-20 h-20 mb-2 flex items-center justify-center text-gray-400 group-hover:text-pink-500 peer-checked:text-pink-600 transition-colors duration-300">
+                                                <!-- Ikon Perempuan Standar Universal -->
+                                                <svg class="w-full h-full icon-girl" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C13.6569 4 15 5.34315 15 7C15 8.65685 13.6569 10 12 10C10.3431 10 9 8.65685 9 7C9 5.34315 10.3431 4 12 4ZM10 12C8.89543 12 8 12.8954 8 14V17.5858L6.70711 18.8787C6.31658 19.2692 6.31658 19.9024 6.70711 20.2929C7.09763 20.6834 7.73081 20.6834 8.12132 20.2929L9 19.4142V23C9 23.5523 9.44772 24 10 24H14C14.5523 24 15 23.5523 15 23V19.4142L15.8787 20.2929C16.2692 20.6834 16.9024 20.6834 17.2929 20.2929C17.6834 19.9024 17.6834 19.2692 17.2929 18.8787L16 17.5858V14C16 12.8954 15.1046 12 14 12H10Z" />
+                                                </svg>
+                                            </div>
+                                            <span class="font-bold text-gray-700 mt-2 group-hover:text-pink-700 peer-checked:text-pink-800 transition-colors">Perempuan</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700">Alamat Lengkap <span class="text-red-500">*</span></label>
+                                <textarea id="reg-alamat" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 border p-2 bg-gray-50" placeholder="Nama Jalan, RT/RW, Desa/Kelurahan"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Orang Tua -->
+                    <div class="pt-4">
+                        <h2 class="text-lg font-bold text-red-700 border-b-2 border-red-100 pb-2 mb-4">2. Data Orang Tua / Wali</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700">Nama Orang Tua / Wali <span class="text-red-500">*</span></label>
+                                <input type="text" id="reg-nama_wali" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 border p-2 bg-gray-50" placeholder="Nama Lengkap Ayah/Ibu/Wali">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Pekerjaan <span class="text-red-500">*</span></label>
+                                <select id="reg-pekerjaan" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 border p-2 bg-gray-50 cursor-pointer">
+                                    <option value="">-- Pilih Pekerjaan --</option>
+                                    <option value="PNS">PNS</option>
+                                    <option value="TNI">TNI</option>
+                                    <option value="POLRI">POLRI</option>
+                                    <option value="Wiraswasta">Wiraswasta</option>
+                                    <option value="Wirausaha">Wirausaha</option>
+                                    <option value="Karyawan Swasta">Karyawan Swasta</option>
+                                    <option value="Petani">Petani</option>
+                                    <option value="Nelayan">Nelayan</option>
+                                    <option value="Buruh">Buruh</option>
+                                    <option value="Buruh Tani">Buruh Tani</option>
+                                    <option value="Lainnya">Lain-lainnya...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">No HP / WhatsApp (Dikunci) <span class="text-red-500">*</span></label>
+                                <input type="tel" id="reg-nohp" required readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-inner bg-gray-200 text-gray-500 border p-2 cursor-not-allowed">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unggah Berkas -->
+                    <div class="pt-4">
+                        <h2 class="text-lg font-bold text-red-700 border-b-2 border-red-100 pb-2 mb-4">3. Unggah Berkas</h2>
+                        <p class="text-xs text-gray-500 mb-4">Maks. 2MB per file. Format: JPG/PNG/PDF.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Pasfoto <span class="text-red-500">*</span></label>
+                                <input type="file" id="reg-foto" accept="image/*" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Scan KK <span class="text-red-500">*</span></label>
+                                <input type="file" id="reg-kk" accept="image/*,application/pdf" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">SKL/Ijazah TK</label>
+                                <input type="file" id="reg-skl" accept="image/*,application/pdf" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="reg-alertBox" class="hidden rounded-md p-4 mt-4 border">
+                        <p id="reg-alertMessage" class="text-sm font-medium"></p>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit" id="reg-submitBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition-colors flex justify-center items-center shadow-lg border-2 border-red-700">
+                            <span id="reg-btnText">Kirim Pendaftaran</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="view-status" class="fade-in hidden max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-10 border border-gray-100">
+            <div class="bg-gray-800 p-6 text-center text-white relative border-b-4 border-red-600">
+                <button onclick="kembaliKeLogin()" class="absolute top-4 right-4 text-gray-300 hover:text-white" title="Keluar">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+                <svg class="w-16 h-16 mx-auto mb-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h1 class="text-2xl font-bold">Data Ditemukan</h1>
+                <p class="text-sm mt-1 text-gray-300">Berikut adalah status berkas Anda.</p>
+            </div>
+
+            <div class="p-6">
+                <div class="bg-gray-50 rounded-xl p-5 space-y-4 border border-gray-200">
+                    <div class="flex justify-between border-b border-gray-200 pb-3">
+                        <span class="text-gray-500 text-sm font-semibold">Nomor Pendaftaran</span>
+                        <span class="font-bold text-red-700" id="resId">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-200 pb-3">
+                        <span class="text-gray-500 text-sm font-semibold">Nama Lengkap</span>
+                        <span class="font-bold text-gray-900" id="resNama">-</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-200 pb-3">
+                        <span class="text-gray-500 text-sm font-semibold">NISN</span>
+                        <span class="font-bold text-gray-900" id="resNisn">-</span>
+                    </div>
+                    <div class="pt-4 text-center">
+                        <span class="text-gray-500 text-sm block mb-3 font-bold uppercase tracking-wider">Status Kelulusan:</span>
+                        <div id="resStatus" class="inline-block px-6 py-2 rounded-full font-bold text-base shadow-sm"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-admin-login" class="fade-in hidden max-w-sm mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden mt-10 border border-red-100">
+            <div class="bg-red-700 p-6 text-center text-white">
+                <div class="bg-white p-3 rounded-full inline-block mb-3 shadow-inner">
+                    <svg class="w-10 h-10 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h1 class="text-2xl font-bold">Otorisasi Panitia</h1>
+                <p class="text-red-200 text-xs mt-1">Sistem Manajemen PPDB</p>
+            </div>
+            <div class="p-6">
+                <form id="adminLoginForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Nama Pengguna (Username)</label>
+                        <input type="text" id="admin-user" required class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-0 focus:border-red-500 transition-colors bg-gray-50 font-medium" placeholder="Masukkan username">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Kata Sandi (Password)</label>
+                        <input type="password" id="admin-pass" required class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-0 focus:border-red-500 transition-colors bg-gray-50 font-medium" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition-colors mt-2">Masuk Sistem</button>
+                </form>
+                <div id="admin-login-alert" class="hidden mt-4 p-3 rounded-lg text-sm text-center bg-red-100 text-red-700 border border-red-200 font-medium">Username atau password salah!</div>
+            </div>
+        </div>
+
+        <div id="view-admin" class="fade-in hidden">
+            <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200 gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-red-700">Dasbor Panitia (Admin)</h1>
+                    <p class="text-sm text-gray-600 font-medium">Verifikasi berkas calon siswa baru.</p>
+                </div>
+                <div class="flex space-x-3 w-full sm:w-auto">
+                    <button onclick="loadAdminData()" class="flex-1 sm:flex-none bg-white border-2 border-gray-200 text-gray-700 hover:bg-gray-50 font-bold py-2 px-4 rounded-lg shadow-sm text-sm flex items-center justify-center transition-colors">
+                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Segarkan
+                    </button>
+                    <button onclick="switchView('admin-login')" class="flex-1 sm:flex-none bg-red-100 border border-red-200 text-red-700 hover:bg-red-200 font-bold py-2 px-4 rounded-lg shadow-sm text-sm flex items-center justify-center transition-colors">
+                        Keluar
+                    </button>
+                </div>
+            </div>
+
+            <div id="admin-errorBox" class="hidden mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm">
+                <strong class="font-bold">Error: </strong>
+                <span id="admin-errorMsg"></span>
+            </div>
+
+            <div class="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+                <div id="admin-loading" class="py-16 text-center">
+                    <div class="loader loader-red loader-large"></div>
+                    <p class="text-gray-500 mt-4 font-bold">Menarik data dari server...</p>
+                </div>
+
+                <div class="overflow-x-auto hidden" id="admin-tableContainer">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">No. Daftar & Tgl</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Biodata Siswa</th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Lampiran</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status Berkas</th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Tindakan Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tableBody" class="bg-white divide-y divide-gray-100">
+                            <!-- Admin Data disisipkan di sini -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="admin-emptyState" class="hidden py-16 text-center">
+                    <svg class="mx-auto h-16 w-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                    <p class="text-gray-500 font-bold text-lg">Belum ada data yang masuk.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ============================================================
+        // PENTING: TEMPELKAN URL WEB APP TERBARU ANDA DI SINI
+        // ============================================================
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwmGFP7iG8XgPtqJmjAgTinwikWDmUD47QCOo65Ms1R7yvU2XcZj7JYmZxKqXdUqTp/exec";
+
+        let currentWA = "";
+
+        // --- SISTEM NAVIGASI (SPA) ---
+        function switchView(viewName) {
+            // Sembunyikan semua layar
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-pendaftaran').classList.add('hidden');
+            document.getElementById('view-status').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+            document.getElementById('view-admin-login').classList.add('hidden');
+            
+            // Reset Navbar 
+            document.getElementById('nav-beranda').classList.remove('bg-white', 'text-red-700', 'shadow-sm');
+            document.getElementById('nav-beranda').classList.add('text-white', 'hover:bg-red-800');
+
+            // Tampilkan layar yg dipilih
+            document.getElementById('view-' + viewName).classList.remove('hidden');
+            
+            if(viewName === 'login' || viewName === 'pendaftaran' || viewName === 'status') {
+                document.getElementById('nav-beranda').classList.add('bg-white', 'text-red-700', 'shadow-sm');
+                document.getElementById('nav-beranda').classList.remove('text-white', 'hover:bg-red-800');
+            }
+            
+            if(viewName === 'admin') loadAdminData();
+        }
+
+        function kembaliKeLogin() {
+            currentWA = "";
+            document.getElementById('loginForm').reset();
+            document.getElementById('login-alertBox').classList.add('hidden');
+            document.getElementById('adminLoginForm').reset();
+            document.getElementById('admin-login-alert').classList.add('hidden');
+            switchView('login');
+        }
+
+        const getBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                if(!file) resolve(null);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve({
+                    name: file.name,
+                    type: file.type,
+                    data: reader.result.split(',')[1] 
+                });
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // ============================================================
+        // LOGIKA ADMIN LOGIN
+        // ============================================================
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value;
+            const pass = document.getElementById('admin-pass').value;
+            
+            // CEK USERNAME & PASSWORD ADMIN
+            if (user === 'admin' && pass === 'admin123') {
+                document.getElementById('admin-login-alert').classList.add('hidden');
+                document.getElementById('adminLoginForm').reset();
+                switchView('admin');
+            } else {
+                document.getElementById('admin-login-alert').classList.remove('hidden');
+            }
+        });
+
+
+        // ============================================================
+        // LOGIKA CEK WA (LOGIN / STATUS)
+        // ============================================================
+        const loginForm = document.getElementById('loginForm');
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const inputWa = document.getElementById('login-nohp').value.replace(/[^0-9]/g, '');
+            const fullWA = "62" + inputWa; 
+            
+            const submitBtn = document.getElementById('login-submitBtn');
+            const btnText = document.getElementById('login-btnText');
+            const alertBox = document.getElementById('login-alertBox');
+            const alertMsg = document.getElementById('login-alertMsg');
+
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="loader loader-white"></span> Memeriksa Data...';
+            submitBtn.classList.replace('bg-red-600', 'bg-gray-400');
+            submitBtn.classList.replace('hover:bg-red-700', 'hover:bg-gray-400');
+            alertBox.classList.add('hidden');
+
+            try {
+                if(APPS_SCRIPT_URL === "URL_WEB_APP_ANDA_DI_SINI") throw new Error("URL Web App belum diatur!");
+
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'cek_wa', nohp: fullWA })
+                });
+                const result = await response.json();
+
+                if (result.status === "found") {
+                    document.getElementById('resId').innerText = result.data.id_pendaftaran;
+                    document.getElementById('resNama').innerText = result.data.nama;
+                    document.getElementById('resNisn').innerText = result.data.nisn;
+                    
+                    const badge = document.getElementById('resStatus');
+                    const statusText = result.data.status_pendaftaran;
+                    badge.innerText = statusText;
+                    
+                    if(statusText.includes("Menunggu")) badge.className = "inline-block px-6 py-2 rounded-full font-bold text-sm bg-yellow-100 text-yellow-800 border-2 border-yellow-300 shadow-sm";
+                    else if(statusText.includes("Diterima")) badge.className = "inline-block px-6 py-2 rounded-full font-bold text-sm bg-green-100 text-green-800 border-2 border-green-400 shadow-sm";
+                    else badge.className = "inline-block px-6 py-2 rounded-full font-bold text-sm bg-red-100 text-red-800 border-2 border-red-300 shadow-sm";
+                    
+                    switchView('status');
+
+                } else if (result.status === "not_found") {
+                    currentWA = fullWA;
+                    document.getElementById('display-wa').innerText = "+" + fullWA;
+                    document.getElementById('reg-nohp').value = fullWA; 
+                    switchView('pendaftaran');
+                } else {
+                    throw new Error("Terjadi kesalahan sistem.");
+                }
+            } catch (error) {
+                alertBox.className = "mt-4 p-4 rounded-lg text-sm text-center bg-red-100 text-red-700 border border-red-200 block";
+                alertMsg.innerText = error.message;
+            } finally {
+                submitBtn.disabled = false;
+                btnText.innerText = 'Lanjutkan';
+                submitBtn.classList.replace('bg-gray-400', 'bg-red-600');
+                submitBtn.classList.replace('hover:bg-gray-400', 'hover:bg-red-700');
+            }
+        });
+
+        // ============================================================
+        // LOGIKA PENDAFTARAN
+        // ============================================================
+        const regForm = document.getElementById('regForm');
+        
+        regForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('reg-submitBtn');
+            const btnText = document.getElementById('reg-btnText');
+            const alertBox = document.getElementById('reg-alertBox');
+            const alertMsg = document.getElementById('reg-alertMessage');
+
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="loader loader-white"></span> Mengirim Berkas...';
+            submitBtn.classList.replace('bg-red-600', 'bg-gray-400');
+            submitBtn.classList.replace('hover:bg-red-700', 'hover:bg-gray-400');
+            submitBtn.classList.replace('border-red-700', 'border-gray-500');
+            alertBox.classList.add('hidden');
+
+            try {
+                const fotoFile = document.getElementById('reg-foto').files[0];
+                const kkFile = document.getElementById('reg-kk').files[0];
+                const sklFile = document.getElementById('reg-skl').files[0];
+
+                const payload = {
+                    nisn: document.getElementById('reg-nisn').value,
+                    nama: document.getElementById('reg-nama').value,
+                    tempat_lahir: document.getElementById('reg-tempat_lahir').value,
+                    tanggal_lahir: document.getElementById('reg-tanggal_lahir').value,
+                    jenis_kelamin: document.querySelector('input[name="reg-jenis_kelamin"]:checked').value,
+                    alamat: document.getElementById('reg-alamat').value,
+                    nama_wali: document.getElementById('reg-nama_wali').value,
+                    pekerjaan: document.getElementById('reg-pekerjaan').value,
+                    nohp: document.getElementById('reg-nohp').value, 
+                    foto: fotoFile ? await getBase64(fotoFile) : null,
+                    kk: kkFile ? await getBase64(kkFile) : null,
+                    skl: sklFile ? await getBase64(sklFile) : null
+                };
+
+                const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    alert("✅ Pendaftaran Berhasil! Nomor Pendaftaran Anda: " + result.id_pendaftaran);
+                    regForm.reset();
+                    document.getElementById('login-nohp').value = currentWA.substring(2); 
+                    document.getElementById('login-submitBtn').click(); 
+                    
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                alertBox.className = "rounded-md p-4 mt-4 border bg-red-100 text-red-800 border-red-300 block";
+                alertMsg.innerText = error.message;
+            } finally {
+                submitBtn.disabled = false;
+                btnText.innerText = 'Kirim Pendaftaran';
+                submitBtn.classList.replace('bg-gray-400', 'bg-red-600');
+                submitBtn.classList.replace('hover:bg-gray-400', 'hover:bg-red-700');
+                submitBtn.classList.replace('border-gray-500', 'border-red-700');
+            }
+        });
+
+        // ============================================================
+        // LOGIKA ADMIN
+        // ============================================================
+        function createLinkButton(url, label, colorClass) {
+            if (!url || url === "-" || url.includes("Gagal")) return `<span class="inline-block px-2 py-1 m-1 text-xs bg-gray-100 text-gray-400 rounded border border-gray-200 cursor-not-allowed">${label}</span>`;
+            return `<a href="${url}" target="_blank" class="inline-block px-2 py-1 m-1 text-xs font-bold text-white ${colorClass} rounded hover:opacity-80 shadow-sm">${label}</a>`;
+        }
+
+        function getStatusBadge(status) {
+            if(status.includes("Menunggu")) return `<span class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200 shadow-sm">${status}</span>`;
+            if(status.includes("Diterima")) return `<span class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-green-100 text-green-800 border border-green-300 shadow-sm">${status}</span>`;
+            return `<span class="px-2 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-red-100 text-red-800 border border-red-300 shadow-sm">${status}</span>`;
+        }
+
+        async function loadAdminData() {
+            const loading = document.getElementById('admin-loading');
+            const tableCon = document.getElementById('admin-tableContainer');
+            const tbody = document.getElementById('admin-tableBody');
+            const errBox = document.getElementById('admin-errorBox');
+            const errMsg = document.getElementById('admin-errorMsg');
+            const empty = document.getElementById('admin-emptyState');
+
+            loading.classList.remove('hidden');
+            tableCon.classList.add('hidden');
+            empty.classList.add('hidden');
+            errBox.classList.add('hidden');
+            tbody.innerHTML = '';
+
+            try {
+                if(APPS_SCRIPT_URL === "URL_WEB_APP_ANDA_DI_SINI") throw new Error("URL Web App belum diganti di script.");
+                
+                const response = await fetch(APPS_SCRIPT_URL);
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    if (result.data.length === 0) {
+                        loading.classList.add('hidden');
+                        empty.classList.remove('hidden');
+                        return;
+                    }
+
+                    result.data.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-red-50 transition-colors";
+                        
+                        // Menyiapkan format nomor WA (menghapus karakter selain angka untuk link)
+                        const waLink = item.nohp && item.nohp !== "-" ? item.nohp.toString().replace(/[^0-9]/g, '') : "";
+                        const waButtonHTML = waLink ? 
+                            `<a href="https://wa.me/${waLink}" target="_blank" class="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-green-100 text-green-700 hover:bg-green-200 rounded text-xs font-bold transition-colors border border-green-300" title="Hubungi via WhatsApp">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                WA: +${waLink}
+                            </a>` : 
+                            `<span class="text-xs text-gray-400 mt-1 block">No WA tidak ada</span>`;
+
+                        tr.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-bold text-gray-900">${item.id_pendaftaran}</div>
+                                <div class="text-xs text-gray-500">${new Date(item.waktu).toLocaleDateString('id-ID')}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-bold text-gray-900">${item.nama}</div>
+                                <div class="text-xs text-gray-500">NISN: ${item.nisn || '-'} | ${item.jenis_kelamin}</div>
+                                ${waButtonHTML}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                ${createLinkButton(item.foto, 'Foto', 'bg-blue-600')}
+                                ${createLinkButton(item.kk, 'KK', 'bg-indigo-600')}
+                                ${createLinkButton(item.skl, 'SKL', 'bg-purple-600')}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                ${getStatusBadge(item.status)}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                <select onchange="updateStatus('${item.id_pendaftaran}', this.value)" class="mt-1 block w-full py-2 px-2 border-2 border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-xs font-bold cursor-pointer">
+                                    <option value="">Ubah Status...</option>
+                                    <option value="Diterima" class="text-green-600">Terima (Lulus)</option>
+                                    <option value="Ditolak (Berkas Tidak Valid)" class="text-red-600">Tolak (Gagal)</option>
+                                    <option value="Menunggu Verifikasi" class="text-yellow-600">Reset Status</option>
+                                </select>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    loading.classList.add('hidden');
+                    tableCon.classList.remove('hidden');
+                } else throw new Error(result.message);
+            } catch (error) {
+                loading.classList.add('hidden');
+                errBox.classList.remove('hidden');
+                errMsg.innerText = error.message;
+            }
+        }
+
+        async function updateStatus(idPendaftaran, statusBaru) {
+            if (!statusBaru) return; 
+            if (!confirm(`Ubah status ${idPendaftaran} menjadi "${statusBaru}"?`)) {
+                loadAdminData(); 
+                return;
+            }
+
+            document.getElementById('admin-loading').classList.remove('hidden');
+            document.getElementById('admin-tableContainer').classList.add('hidden');
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'update_status', id_pendaftaran: idPendaftaran, status_baru: statusBaru })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    alert("✅ Status berhasil diperbarui!");
+                    loadAdminData(); 
+                } else throw new Error(result.message);
+            } catch (error) {
+                alert("❌ Gagal: " + error.message);
+                loadAdminData();
+            }
+        }
+    </script>
+</body>
+</html>
