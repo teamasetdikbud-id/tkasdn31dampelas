@@ -1756,8 +1756,19 @@
 
             const handleExportCSV = () => {
                 if (displayHasil.length === 0) return alert("Tidak ada data untuk diekspor");
-                const headers = Object.keys(displayHasil[0]);
-                const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...displayHasil.map(row => headers.map(h => `"${String(row[h] || '').replace(/"/g, '""')}"`).join(","))].join("\n");
+                const exportData = displayHasil.map(row => {
+                    const siswa = (dbSiswa || []).find(s => String(s.NISN) === String(row.NISN));
+                    return {
+                        "Waktu Submit": row.Timestamp,
+                        "NISN": row.NISN,
+                        "Nama Siswa": siswa ? siswa.Nama : 'Tidak Diketahui',
+                        "Mapel Sesi": row.Mapel,
+                        "Skor Akhir": row.Skor,
+                        "Analisis Butir": row.Analisis_Butir
+                    };
+                });
+                const headers = Object.keys(exportData[0]);
+                const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...exportData.map(row => headers.map(h => `"${String(row[h] || '').replace(/"/g, '""')}"`).join(","))].join("\n");
                 const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `Hasil_${selectedMapel}_${selectedKelas}.csv`); link.click();
             };
 
@@ -1823,12 +1834,15 @@
                                     <p className="text-sm font-medium mt-1 uppercase">{appConfig?.namaSekolah || 'Sekolah'}</p>
                                 </div>
                                 <table className="w-full text-left text-sm whitespace-nowrap">
-                                    <thead className="bg-slate-100 text-slate-600"><tr><th className="p-4 border-b">No</th><th className="p-4 border-b">Waktu Submit</th><th className="p-4 border-b">NISN</th><th className="p-4 border-b">Mapel Sesi</th><th className="p-4 border-b text-center">Skor Akhir</th></tr></thead>
+                                    <thead className="bg-slate-100 text-slate-600"><tr><th className="p-4 border-b">No</th><th className="p-4 border-b">Waktu Submit</th><th className="p-4 border-b">NISN</th><th className="p-4 border-b">Nama Siswa</th><th className="p-4 border-b">Mapel Sesi</th><th className="p-4 border-b text-center">Skor Akhir</th></tr></thead>
                                     <tbody>
-                                        {displayHasil.map((row, i) => (
-                                            <tr key={i} className="hover:bg-slate-50 border-b"><td className="p-4 font-bold">{i+1}</td><td className="p-4">{row.Timestamp}</td><td className="p-4 font-mono font-bold">{row.NISN}</td><td className="p-4">{row.Mapel}</td><td className="p-4 text-center font-black text-blue-600 text-lg">{row.Skor}</td></tr>
-                                        ))}
-                                        {displayHasil.length === 0 && <tr><td colSpan="5" className="p-6 text-center text-slate-500">Belum ada data nilai.</td></tr>}
+                                        {displayHasil.map((row, i) => {
+                                            const siswa = (dbSiswa || []).find(s => String(s.NISN) === String(row.NISN));
+                                            return (
+                                                <tr key={i} className="hover:bg-slate-50 border-b"><td className="p-4 font-bold">{i+1}</td><td className="p-4">{row.Timestamp}</td><td className="p-4 font-mono font-bold">{row.NISN}</td><td className="p-4 font-bold text-slate-800">{siswa ? siswa.Nama : '-'}</td><td className="p-4">{row.Mapel}</td><td className="p-4 text-center font-black text-blue-600 text-lg">{row.Skor}</td></tr>
+                                            );
+                                        })}
+                                        {displayHasil.length === 0 && <tr><td colSpan="6" className="p-6 text-center text-slate-500">Belum ada data nilai.</td></tr>}
                                     </tbody>
                                 </table>
                             </div>
