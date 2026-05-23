@@ -5,21 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TKA Digital SD Portal - Tema Merah Putih</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         /* CSS KHUSUS PRINT */
         @media print {
             @page { size: A4 portrait; margin: 10mm; }
-            
-            /* RESET SEMUA PEMBATAS LAYAR UNTUK MENCEGAH TERPOTONG (PAGINATION FIX) */
             body, html, #root { 
                 background-color: white !important; 
                 -webkit-print-color-adjust: exact; 
@@ -29,39 +23,17 @@
                 display: block !important;
                 position: static !important;
             }
-
-            /* Mematikan sifat h-screen flexbox Tailwind yang memotong halaman 2 ke bawah */
             .h-screen, .overflow-hidden, .overflow-y-auto {
                 height: auto !important;
                 overflow: visible !important;
                 display: block !important;
             }
-
             .print-hidden { display: none !important; }
             .print-visible { display: block !important; }
             
-            /* Aturan Layout untuk Cetak Kartu Massal agar tidak terpotong */
-            .print-card-container { 
-                display: flex !important; 
-                flex-wrap: wrap !important; 
-                justify-content: space-between !important; 
-                width: 100% !important; 
-                gap: 0 !important;
-            }
-            .print-card { 
-                width: 48% !important; 
-                height: 52mm !important; 
-                display: inline-block !important;
-                margin-bottom: 5mm !important;
-                padding: 6px !important;
-                border: 1px solid #000 !important;
-                border-radius: 8px !important;
-                box-sizing: border-box !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
+            .print-card-container { display: flex !important; flex-wrap: wrap !important; justify-content: space-between !important; width: 100% !important; gap: 0 !important; }
+            .print-card { width: 48% !important; height: 52mm !important; display: inline-block !important; margin-bottom: 5mm !important; padding: 6px !important; border: 1px solid #000 !important; border-radius: 8px !important; box-sizing: border-box !important; page-break-inside: avoid !important; break-inside: avoid !important; }
 
-            /* Aturan untuk Tabel Laporan/PDF */
             table { page-break-inside: auto !important; width: 100% !important; border-collapse: collapse !important; }
             tr { page-break-inside: avoid !important; page-break-after: auto !important; }
             th { background-color: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; color: black !important; }
@@ -69,11 +41,9 @@
             thead { display: table-header-group !important; }
             tfoot { display: table-footer-group !important; }
 
-            /* Fix Tabel Rekap agar tidak terpotong (Shrink to fit) */
             .rekap-table { font-size: 10px !important; }
             .rekap-table th, .rekap-table td { padding: 4px !important; word-break: break-word; }
 
-            /* Ukuran font kartu */
             .print-title { font-size: 11px !important; font-weight: 900 !important; margin: 0 !important; line-height: 1.2 !important; color: black !important;}
             .print-subtitle { font-size: 8px !important; font-weight: bold !important; margin: 0 !important; color: black !important;}
             .print-text-tiny { font-size: 8px !important; line-height: 1.1 !important; margin: 0 !important; color: black !important;}
@@ -82,17 +52,11 @@
             .print-logo { height: 22px !important; margin-bottom: 2px !important; }
         }
         
-        @media screen {
-            .print-visible { display: none !important; }
-        }
-
-        /* Custom scrollbar */
+        @media screen { .print-visible { display: none !important; } }
         .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Sembunyikan scrollbar untuk bottom nav mobile */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -101,20 +65,14 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        /* ==========================================
-           PASTE URL GOOGLE APPS SCRIPT ANDA DI SINI
-           ========================================== */
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxQ4volyK0SDoa-C2n1glYsAaBp0KuC_Er7_BNX_B6HrPeQYuzjeLQNG_qTMW9YDvWb/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxfVijQibVnQ-H0B-PgQto6n8c8qy1gIOEHmjy-nSngnXCT0FKCqI2ouoaEw2XW8UfZ/exec";
 
-        // FUNGSI GLOBAL: Konverter Link Google Drive Anti-Blokir
         const getSafeImageUrl = (url) => {
             if (!url) return '';
             let str = String(url).trim();
             if (str.includes('drive.google.com')) {
                 const match = str.match(/id=([a-zA-Z0-9_-]+)/) || str.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    return `https://lh3.googleusercontent.com/d/${match[1]}`;
-                }
+                if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
             }
             return str;
         };
@@ -125,7 +83,6 @@
             return str.startsWith('data:image') || str.includes('drive.google.com') || str.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i);
         };
 
-        // Daftar Konstanta
         const MAPEL_LIST = ['PAI', 'PKN', 'B.INDONESIA', 'MATEMATIKA', 'IPAS', 'PJOK', 'SENI', 'B.INGGRIS'];
         const SESI_LIST = ['SESI 1', 'SESI 2', 'SESI 3', 'SESI 4'];
 
@@ -137,30 +94,24 @@
             const [activeExam, setActiveExam] = useState(null);
             const [errorMsg, setErrorMsg] = useState('');
 
-            /* Database States */
             const [dbSiswa, setDbSiswa] = useState([]);
             const [dbSoal, setDbSoal] = useState([]);
             const [dbJadwal, setDbJadwal] = useState([]);
             const [dbHasil, setDbHasil] = useState([]);
             const [dbGuru, setDbGuru] = useState([]);
 
-            /* App Configuration State */
             const [appConfig, setAppConfig] = useState(() => {
                 const saved = localStorage.getItem('tka_app_config');
                 return saved ? JSON.parse(saved) : { 
                     namaSekolah: 'SD NEGERI 1 MERAH PUTIH', 
                     namaUjian: 'Ujian Akhir Semester', 
-                    logo: '',
-                    loginBackground: '',
+                    logo: '', loginBackground: '',
                     daftarRombel: 'Kelas 1,Kelas 2,Kelas 3,Kelas 4,Kelas 5,Kelas 6',
-                    adminUser: 'admin',
-                    adminPass: 'admin'
+                    adminUser: 'admin', adminPass: 'admin'
                 };
             });
 
-            useEffect(() => {
-                localStorage.setItem('tka_app_config', JSON.stringify(appConfig));
-            }, [appConfig]);
+            useEffect(() => { localStorage.setItem('tka_app_config', JSON.stringify(appConfig)); }, [appConfig]);
 
             useEffect(() => {
                 const fetchAllData = async (url) => {
@@ -182,25 +133,19 @@
 
                         if (resConfig && resConfig.status === 'success' && resConfig.data) {
                             const newConfig = { ...appConfig };
-                            resConfig.data.forEach(item => {
-                                if(item && item.Key && item.Value !== undefined) newConfig[item.Key] = item.Value;
-                            });
-                            
+                            resConfig.data.forEach(item => { if(item && item.Key && item.Value !== undefined) newConfig[item.Key] = item.Value; });
                             if(!newConfig.daftarRombel) newConfig.daftarRombel = 'Kelas 1,Kelas 2,Kelas 3,Kelas 4,Kelas 5,Kelas 6';
                             if(!newConfig.adminUser) newConfig.adminUser = 'admin';
                             if(!newConfig.adminPass) newConfig.adminPass = 'admin';
                             setAppConfig(newConfig);
                         }
 
-                        // Anti Refresh Blank Screen
                         const savedUser = localStorage.getItem('tka_current_user');
                         if (savedUser) {
                             const parsedUser = JSON.parse(savedUser);
                             setCurrentUser(parsedUser);
                             setView(parsedUser.role === 'siswa' ? 'siswa' : 'admin');
-                        } else {
-                            setView('login');
-                        }
+                        } else setView('login');
 
                     } catch (err) {
                         setErrorMsg("Gagal terhubung ke Cloud Database. Pastikan internet aktif dan URL GAS benar.");
@@ -222,24 +167,17 @@
             const handleLogout = () => {
                 if(window.confirm('Apakah Anda yakin ingin keluar?')) {
                     localStorage.removeItem('tka_current_user');
-                    setCurrentUser(null); 
-                    setView('login'); 
-                    setActiveExam(null);
+                    setCurrentUser(null); setView('login'); setActiveExam(null);
                 }
             };
 
             const executeApiAction = async (action, payload) => {
                 try {
                     const response = await fetch(GAS_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action, payload }),
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                        method: 'POST', body: JSON.stringify({ action, payload }), headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                     });
                     return await response.json();
-                } catch (err) { 
-                    console.error("API POST Error", err); 
-                    return { status: 'error' };
-                }
+                } catch (err) { return { status: 'error' }; }
             };
 
             if (view === 'loading') return <LoadingScreen />;
@@ -251,35 +189,21 @@
                     {view === 'admin' && <DashboardPortal user={currentUser} onLogout={handleLogout} data={{dbSiswa, dbSoal, dbJadwal, dbHasil, dbGuru}} refreshData={() => window.location.reload()} apiCall={executeApiAction} setDbSoal={setDbSoal} setDbGuru={setDbGuru} setDbSiswa={setDbSiswa} setDbJadwal={setDbJadwal} appConfig={appConfig} setAppConfig={setAppConfig} />}
                     {view === 'siswa' && <StudentPortal user={currentUser} onLogout={handleLogout} dbJadwal={dbJadwal} dbHasil={dbHasil} appConfig={appConfig} onStartExam={(e) => {setActiveExam(e); setView('exam');}} />}
                     {view === 'exam' && (
-                        <ExamEngine 
-                            user={currentUser} 
-                            examData={activeExam} 
-                            dbSoal={dbSoal} 
-                            dbGuru={dbGuru} 
-                            appConfig={appConfig} 
-                            onFinish={async (hasil) => { 
-                                // PERBAIKAN: API Call di-await untuk memastikan nilai masuk Sheet
+                        <ExamEngine user={currentUser} examData={activeExam} dbSoal={dbSoal} dbGuru={dbGuru} appConfig={appConfig} onFinish={async (hasil) => { 
                                 const res = await executeApiAction('saveHasil', hasil); 
                                 if (res && res.status === 'success') {
-                                    setDbHasil(p => [...p, hasil]); 
-                                    setActiveExam(null); 
-                                    setView('siswa'); 
-                                    alert("Ujian Selesai! Skor Anda: " + hasil.Skor); 
-                                    return true; // Berhasil
+                                    setDbHasil(p => [...p, hasil]); setActiveExam(null); setView('siswa'); 
+                                    alert("Ujian Selesai! Skor Anda: " + hasil.Skor); return true; 
                                 } else {
                                     alert("GAGAL MENYIMPAN NILAI KE SERVER!\nPastikan internet Anda stabil, lalu coba klik 'Kumpulkan' lagi.\n\nPesan Error: " + (res?.message || "Koneksi terputus"));
-                                    return false; // Gagal, cegah reset form
+                                    return false; 
                                 }
-                            }} 
-                        />
+                            }} />
                     )}
                 </div>
             );
         };
 
-        /* ==========================================
-           GLOBAL UI COMPONENTS
-           ========================================== */
         const LoadingScreen = () => (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-600">
                 <i className="fas fa-spinner fa-spin text-5xl text-red-600 mb-6"></i>
@@ -346,7 +270,6 @@
         const GantiPasswordModal = ({ onClose, onSubmit }) => {
             const [oldPwd, setOldPwd] = useState('');
             const [newPwd, setNewPwd] = useState('');
-            
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
                     <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6">
@@ -430,16 +353,13 @@
             
             const { dbSiswa, dbSoal, dbJadwal, dbHasil, dbGuru } = data;
             
-            // Penentuan Akses
+            // ROLE-BASED ACCESS CONTROL (RBAC) LOGIC
             const isAdmin = user.role === 'admin' && user.Nama_Guru === 'Administrator';
-            const userKelas = String(user.Kelas_Guru || '').trim(); 
+            const targetAkses = String(user.Kelas_Guru || '').trim();
+            const isGuruMapel = !isAdmin && MAPEL_LIST.includes(targetAkses);
+            const isGuruKelas = !isAdmin && !isGuruMapel; 
 
-            // SINGLE SOURCE OF TRUTH: Ambil kelas HANYA dari appConfig.daftarRombel
-            const availableClasses = (appConfig.daftarRombel || 'Kelas 1,Kelas 2,Kelas 3,Kelas 4,Kelas 5,Kelas 6')
-                .split(',')
-                .map(c => c.trim())
-                .filter(Boolean)
-                .sort();
+            const availableClasses = (appConfig.daftarRombel || 'Kelas 1,Kelas 2,Kelas 3,Kelas 4,Kelas 5,Kelas 6').split(',').map(c => c.trim()).filter(Boolean).sort();
 
             let tabs = [
                 { id: 'dashboard', label: 'Home', icon: 'fa-home' },
@@ -449,7 +369,6 @@
                 { id: 'rekap', label: 'Rekap', icon: 'fa-table' }
             ];
             
-            // Menu Khusus Admin
             if (isAdmin) {
                 tabs.splice(3, 0, { id: 'rombel', label: 'Rombel', icon: 'fa-layer-group' });
                 tabs.push({ id: 'pengaturan', label: 'Sesi', icon: 'fa-clock' });
@@ -457,16 +376,17 @@
                 tabs.push({ id: 'guru', label: 'Guru', icon: 'fa-chalkboard-teacher' });
             }
 
-            // Filter Data AMAN
-            const displayedSiswa = isAdmin ? dbSiswa : (dbSiswa || []).filter(s => s && s.Kelas && String(s.Kelas).trim().toLowerCase() === userKelas.toLowerCase());
+            // Dashboard Stats Filters
+            const displayedSiswa = (isAdmin || isGuruMapel) ? dbSiswa : (dbSiswa || []).filter(s => s && s.Kelas === targetAkses);
             const mySoalCount = isAdmin ? dbSoal.length : (dbSoal || []).filter(s => s && s.Pembuat === user.Nama_Guru).length;
-            const displayedJadwal = isAdmin ? dbJadwal : (dbJadwal || []).filter(j => j && j.Mapel && String(j.Mapel).toLowerCase().includes(userKelas.toLowerCase()));
             
             const relevantHasil = (dbHasil || []).filter(h => {
                 if (!h) return false;
                 if (isAdmin) return true;
-                return displayedSiswa.some(s => s && String(s.NISN) === String(h.NISN));
+                if (isGuruMapel) return h.Mapel && String(h.Mapel).trim().toLowerCase().startsWith(targetAkses.toLowerCase());
+                return displayedSiswa.some(s => s && String(s.NISN) === String(h.NISN)); // Guru Kelas
             });
+
             const validScores = relevantHasil.filter(h => h.Skor !== undefined && !isNaN(parseInt(h.Skor))).map(h => parseInt(h.Skor));
             const averageScore = validScores.length > 0 ? (validScores.reduce((a,b) => a+b, 0) / validScores.length).toFixed(1) : 0;
 
@@ -491,8 +411,8 @@
                                 </div>
                             )}
                             <div>
-                                <div className="font-bold text-sm leading-tight">Portal {isAdmin ? 'Admin' : 'Guru'}</div>
-                                <div className="text-[10px] text-red-200 leading-tight">{user.Nama_Guru} {userKelas ? `(${userKelas})` : ''}</div>
+                                <div className="font-bold text-sm leading-tight">Portal {isAdmin ? 'Admin' : (isGuruMapel ? 'Guru Mapel' : 'Guru Kelas')}</div>
+                                <div className="text-[10px] text-red-200 leading-tight">{user.Nama_Guru} {targetAkses ? `(${targetAkses})` : ''}</div>
                             </div>
                         </div>
                         <div className="flex gap-2">
@@ -516,17 +436,14 @@
                                     <span className="font-bold text-lg truncate">Portal {isAdmin ? 'Admin' : 'Guru'}</span>
                                 </div>
                                 <div className="text-xs text-red-200 bg-red-950 px-2 py-1 rounded inline-block truncate max-w-full">
-                                    {user.Nama_Guru} {userKelas ? `(${userKelas})` : ''}
+                                    {user.Nama_Guru} {targetAkses ? `(${targetAkses})` : ''}
                                 </div>
                             </div>
                             <div className="flex-1 py-4 overflow-y-auto custom-scrollbar">
                                 <ul className="space-y-1 px-3">
                                     {tabs.map(tab => (
                                         <li key={tab.id}>
-                                            <button 
-                                                onClick={() => setActiveTab(tab.id)} 
-                                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors ${activeTab === tab.id ? 'bg-red-700 text-white font-bold shadow-sm' : 'text-red-200 hover:bg-red-800 hover:text-white'}`}
-                                            >
+                                            <button onClick={() => setActiveTab(tab.id)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors ${activeTab === tab.id ? 'bg-red-700 text-white font-bold shadow-sm' : 'text-red-200 hover:bg-red-800 hover:text-white'}`}>
                                                 <i className={`fas ${tab.icon} w-5`}></i> {tab.label}
                                             </button>
                                         </li>
@@ -534,17 +451,9 @@
                                 </ul>
                             </div>
                             <div className="p-4 border-t border-red-800 space-y-2">
-                                {!isAdmin && (
-                                    <button onClick={() => setShowPwdModal(true)} className="flex items-center justify-center gap-2 bg-red-800 hover:bg-red-700 w-full py-2 rounded-lg text-sm text-white transition">
-                                        <i className="fas fa-key"></i> Ganti Password
-                                    </button>
-                                )}
-                                <button onClick={refreshData} className="flex items-center justify-center gap-2 text-red-300 hover:text-white hover:bg-red-800 w-full py-2 rounded-lg text-sm transition">
-                                    <i className="fas fa-sync-alt"></i> Refresh / Sync
-                                </button>
-                                <button onClick={onLogout} className="flex items-center justify-center gap-2 text-red-300 hover:text-white hover:bg-red-800 w-full py-2 rounded-lg text-sm transition">
-                                    <i className="fas fa-sign-out-alt"></i> Logout
-                                </button>
+                                {!isAdmin && <button onClick={() => setShowPwdModal(true)} className="flex items-center justify-center gap-2 bg-red-800 hover:bg-red-700 w-full py-2 rounded-lg text-sm text-white transition"><i className="fas fa-key"></i> Ganti Password</button>}
+                                <button onClick={refreshData} className="flex items-center justify-center gap-2 text-red-300 hover:text-white hover:bg-red-800 w-full py-2 rounded-lg text-sm transition"><i className="fas fa-sync-alt"></i> Refresh / Sync</button>
+                                <button onClick={onLogout} className="flex items-center justify-center gap-2 text-red-300 hover:text-white hover:bg-red-800 w-full py-2 rounded-lg text-sm transition"><i className="fas fa-sign-out-alt"></i> Logout</button>
                             </div>
                         </div>
 
@@ -554,25 +463,27 @@
                                 <div className="print-hidden">
                                     <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-slate-800">Dashboard Utama</h2>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
-                                        <StatCard title="Siswa Terdaftar" value={displayedSiswa.length} icon="fa-users" color="bg-red-600" />
-                                        <StatCard title={isAdmin ? "Total Soal" : "Soal Saya"} value={mySoalCount} icon="fa-file-alt" color="bg-slate-600" />
-                                        <StatCard title="Hasil Ujian" value={relevantHasil.length} icon="fa-check-circle" color="bg-red-500" />
+                                        <StatCard title="Siswa Anda" value={displayedSiswa.length} icon="fa-users" color="bg-red-600" />
+                                        <StatCard title={isAdmin ? "Total Soal" : "Soal Anda"} value={mySoalCount} icon="fa-file-alt" color="bg-slate-600" />
+                                        <StatCard title="Data Masuk" value={relevantHasil.length} icon="fa-check-circle" color="bg-red-500" />
                                         <StatCard title="Rata Nilai" value={averageScore} icon="fa-chart-line" color="bg-amber-500" />
                                     </div>
                                     <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                                         <h3 className="font-bold text-lg mb-2 text-slate-800">Selamat Datang, {user.Nama_Guru}!</h3>
-                                        <p className="text-sm text-slate-600">Sistem ini membatasi akses Anda secara otomatis. Anda hanya akan melihat data siswa, nilai, dan sesi ujian yang terdaftar pada kelas yang Anda ampu <strong>({userKelas || 'Semua Kelas'})</strong>.</p>
+                                        <p className="text-sm text-slate-600">Sistem membatasi akses secara otomatis. Sebagai <strong>{isAdmin ? 'Administrator' : (isGuruMapel ? 'Guru Bidang Studi' : 'Wali Kelas')} {targetAkses ? `(${targetAkses})` : ''}</strong>, Anda hanya akan melihat data siswa dan ujian yang berada dalam ruang lingkup kewenangan Anda.</p>
                                     </div>
                                 </div>
                             )}
-                            {activeTab === 'soal' && <ManajemenSoal dbSoal={dbSoal} setDbSoal={setDbSoal} user={user} isAdmin={isAdmin} apiCall={apiCall} dbGuru={dbGuru} availableClasses={availableClasses} />}
-                            {activeTab === 'siswa' && <DataPeserta data={displayedSiswa} setDbSiswa={setDbSiswa} apiCall={apiCall} isAdmin={isAdmin} userKelas={userKelas} availableClasses={availableClasses} appConfig={appConfig} setAppConfig={setAppConfig} />}
-                            {activeTab === 'hasil' && <HasilUjianHierarchy dbHasil={dbHasil} dbSiswa={dbSiswa} isAdmin={isAdmin} userKelas={userKelas} availableClasses={availableClasses} appConfig={appConfig} />}
-                            {activeTab === 'rekap' && <RekapitulasiHasil dbHasil={dbHasil} dbSiswa={dbSiswa} isAdmin={isAdmin} userKelas={userKelas} availableClasses={availableClasses} appConfig={appConfig} dbGuru={dbGuru} />}
+                            
+                            {activeTab === 'soal' && <ManajemenSoal dbSoal={dbSoal} setDbSoal={setDbSoal} user={user} isAdmin={isAdmin} isGuruMapel={isGuruMapel} isGuruKelas={isGuruKelas} targetAkses={targetAkses} apiCall={apiCall} dbGuru={dbGuru} availableClasses={availableClasses} />}
+                            {activeTab === 'siswa' && <DataPeserta data={dbSiswa} setDbSiswa={setDbSiswa} apiCall={apiCall} isAdmin={isAdmin} isGuruMapel={isGuruMapel} targetAkses={targetAkses} availableClasses={availableClasses} appConfig={appConfig} setAppConfig={setAppConfig} />}
+                            {activeTab === 'hasil' && <HasilUjianHierarchy dbHasil={dbHasil} dbSiswa={dbSiswa} isAdmin={isAdmin} isGuruMapel={isGuruMapel} isGuruKelas={isGuruKelas} targetAkses={targetAkses} availableClasses={availableClasses} appConfig={appConfig} />}
+                            {activeTab === 'rekap' && <RekapitulasiHasil dbHasil={dbHasil} dbSiswa={dbSiswa} isAdmin={isAdmin} isGuruMapel={isGuruMapel} isGuruKelas={isGuruKelas} targetAkses={targetAkses} availableClasses={availableClasses} appConfig={appConfig} dbGuru={dbGuru} />}
+                            
                             {activeTab === 'rombel' && isAdmin && <ManajemenRombel dbSiswa={dbSiswa} setDbSiswa={setDbSiswa} apiCall={apiCall} availableClasses={availableClasses} appConfig={appConfig} setAppConfig={setAppConfig} />}
                             {activeTab === 'cetakkartu' && isAdmin && <CetakKartuAdmin dbSiswa={dbSiswa} appConfig={appConfig} availableClasses={availableClasses} />}
                             {activeTab === 'guru' && isAdmin && <ManajemenGuru dbGuru={dbGuru} setDbGuru={setDbGuru} apiCall={apiCall} availableClasses={availableClasses} />}
-                            {activeTab === 'pengaturan' && isAdmin && <PengaturanSistem appConfig={appConfig} setAppConfig={setAppConfig} dbJadwal={displayedJadwal} setDbJadwal={setDbJadwal} apiCall={apiCall} isAdmin={isAdmin} userKelas={userKelas} availableClasses={availableClasses} />}
+                            {activeTab === 'pengaturan' && isAdmin && <PengaturanSistem appConfig={appConfig} setAppConfig={setAppConfig} dbJadwal={dbJadwal} setDbJadwal={setDbJadwal} apiCall={apiCall} isAdmin={isAdmin} userKelas={targetAkses} availableClasses={availableClasses} />}
                             
                             {showPwdModal && <GantiPasswordModal onClose={() => setShowPwdModal(false)} onSubmit={handleChangePassword} />}
                         </div>
@@ -581,11 +492,7 @@
                     {/* MOBILE BOTTOM NAVIGATION */}
                     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex overflow-x-auto z-30 shadow-[0_-4px_15px_rgba(0,0,0,0.05)] hide-scrollbar pb-safe print-hidden">
                         {tabs.map(tab => (
-                            <button 
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)} 
-                                className={`flex flex-col items-center justify-center min-w-[72px] flex-1 pt-3 pb-2 px-1 transition-colors relative ${activeTab === tab.id ? 'text-red-600' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-                            >
+                            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex flex-col items-center justify-center min-w-[72px] flex-1 pt-3 pb-2 px-1 transition-colors relative ${activeTab === tab.id ? 'text-red-600' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}>
                                 {activeTab === tab.id && <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-red-600 rounded-b-full"></div>}
                                 <i className={`fas ${tab.icon} text-[20px] mb-1.5 ${activeTab === tab.id ? 'scale-110' : ''} transition-transform`}></i>
                                 <span className="text-[10px] font-bold text-center leading-tight whitespace-nowrap overflow-hidden text-ellipsis w-full px-1">{tab.label}</span>
@@ -775,7 +682,7 @@
             const [adminPass, setAdminPass] = useState(appConfig.adminPass || 'admin');
             const [isUploading, setIsUploading] = useState(false);
 
-            const [jadwalForm, setJadwalForm] = useState({ ID_Tes: '', Mapel: '', Kelas: isAdmin ? '' : userKelas, Tanggal: '', Waktu: '', Zona_Waktu: 'WITA', Durasi: 120, Token: '', Status: 'Aktif' });
+            const [jadwalForm, setJadwalForm] = useState({ ID_Tes: '', Mapel: '', Kelas: '', Tanggal: '', Waktu: '', Zona_Waktu: 'WITA', Durasi: 120, Token: '', Status: 'Aktif' });
             const [isEditingJadwal, setIsEditingJadwal] = useState(false);
 
             const handleSaveIdentitas = (e) => {
@@ -838,7 +745,7 @@
                     apiCall('addJadwal', newJadwal);
                     alert("Jadwal/Token baru berhasil dibuat!");
                 }
-                setJadwalForm({ ID_Tes: '', Mapel: '', Kelas: isAdmin ? '' : userKelas, Tanggal: '', Waktu: '', Zona_Waktu: 'WITA', Durasi: 120, Token: '', Status: 'Aktif' });
+                setJadwalForm({ ID_Tes: '', Mapel: '', Kelas: '', Tanggal: '', Waktu: '', Zona_Waktu: 'WITA', Durasi: 120, Token: '', Status: 'Aktif' });
                 setIsEditingJadwal(false);
             };
 
@@ -927,7 +834,7 @@
                                         </div>
                                         <div>
                                             <label className="text-sm font-bold">Kelas Tujuan</label>
-                                            <select required disabled={!isAdmin} className={`w-full border p-2 rounded bg-white focus:ring-2 focus:ring-amber-500 outline-none ${!isAdmin ? 'bg-slate-100 text-slate-600' : ''}`} value={jadwalForm.Kelas || ''} onChange={e=>setJadwalForm({...jadwalForm, Kelas: e.target.value})}>
+                                            <select required className="w-full border p-2 rounded bg-white focus:ring-2 focus:ring-amber-500 outline-none" value={jadwalForm.Kelas || ''} onChange={e=>setJadwalForm({...jadwalForm, Kelas: e.target.value})}>
                                                 <option value="">-- Pilih Kelas --</option>
                                                 {availableClasses.map(k => <option key={k} value={k}>{k}</option>)}
                                             </select>
@@ -967,7 +874,7 @@
                                     </div>
                                     <div className="flex gap-2 pt-2">
                                         {isEditingJadwal && (
-                                            <button type="button" onClick={() => { setIsEditingJadwal(false); setJadwalForm({ ID_Tes: '', Mapel: '', Kelas: isAdmin ? '' : userKelas, Tanggal: '', Waktu: '', Zona_Waktu: 'WITA', Durasi: 120, Token: '', Status: 'Aktif' }); }} className="w-1/3 bg-slate-200 font-bold py-2 rounded">Batal</button>
+                                            <button type="button" onClick={() => { setIsEditingJadwal(false); setJadwalForm({ ID_Tes: '', Mapel: '', Kelas: '', Tanggal: '', Waktu: '', Zona_Waktu: 'WITA', Durasi: 120, Token: '', Status: 'Aktif' }); }} className="w-1/3 bg-slate-200 font-bold py-2 rounded">Batal</button>
                                         )}
                                         <button type="submit" className={`${isEditingJadwal ? 'w-2/3' : 'w-full'} bg-amber-500 text-white font-bold py-2.5 rounded-lg shadow hover:bg-amber-600 transition`}>
                                             {isEditingJadwal ? 'Perbarui Sesi' : 'Buat Sesi Ujian'}
@@ -1100,10 +1007,15 @@
                             <div><label className="text-sm font-bold block mb-1">Nama Lengkap & Title</label><input required type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-red-500 outline-none" value={form.Nama_Guru} onChange={(e) => setForm({...form, Nama_Guru: e.target.value})} placeholder="Bpk. Andi (Wali Kelas 6)" /></div>
                             <div><label className="text-sm font-bold block mb-1">Password</label><input required type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-red-500 outline-none" value={form.Password} onChange={(e) => setForm({...form, Password: e.target.value})} placeholder="pass123"/></div>
                             <div>
-                                <label className="text-sm font-bold block mb-1">Wali Kelas (Hak Akses)</label>
+                                <label className="text-sm font-bold block mb-1">Pilih Hak Akses (Wajib)</label>
                                 <select required className="w-full border p-2 rounded focus:ring-2 focus:ring-red-500 outline-none bg-white" value={form.Kelas_Guru} onChange={(e) => setForm({...form, Kelas_Guru: e.target.value})}>
-                                    <option value="">-- Pilih Kelas Ampuan --</option>
-                                    {availableClasses.map(num => <option key={num} value={num}>{num}</option>)}
+                                    <option value="">-- Pilih Hak Akses --</option>
+                                    <optgroup label="Wali Kelas (Guru Kelas)">
+                                        {availableClasses.map(num => <option key={num} value={num}>{num}</option>)}
+                                    </optgroup>
+                                    <optgroup label="Guru Bidang Studi (Mapel)">
+                                        {MAPEL_LIST.map(m => <option key={m} value={m}>Guru {m}</option>)}
+                                    </optgroup>
                                 </select>
                             </div>
                             <button type="submit" className="w-full bg-red-600 text-white font-bold py-2 rounded hover:bg-red-700 transition">
@@ -1118,19 +1030,23 @@
         /* ==========================================
            SUB KOMPONEN DATA PESERTA
            ========================================== */
-        const DataPeserta = ({ data = [], setDbSiswa, apiCall, isAdmin, userKelas, availableClasses, appConfig, setAppConfig }) => {
+        const DataPeserta = ({ data = [], setDbSiswa, apiCall, isAdmin, isGuruMapel, targetAkses, availableClasses, appConfig, setAppConfig }) => {
             const [searchTerm, setSearchTerm] = useState('');
+            const [filterKelas, setFilterKelas] = useState('');
             const [showAddModal, setShowAddModal] = useState(false);
             const [showImportModal, setShowImportModal] = useState(false);
             const [isEditing, setIsEditing] = useState(false);
             const fileSiswaRef = useRef(null);
 
             const [formSiswa, setFormSiswa] = useState({
-                NISN: '', Nama: '', Kelas: isAdmin ? '' : userKelas, Grup: 'A', Password: '', Status_Aktif: 'TRUE'
+                NISN: '', Nama: '', Kelas: '', Grup: 'A', Password: '', Status_Aktif: 'TRUE'
             });
 
+            // Filter data sesuai hak akses (Admin & Guru Mapel bisa dropdown, Guru Kelas dikunci)
             const filteredData = (data || []).filter(row => {
                 if(!row) return false;
+                if(!isAdmin && !isGuruMapel && row.Kelas !== targetAkses) return false; // Restriksi Wali Kelas
+                if((isAdmin || isGuruMapel) && filterKelas && row.Kelas !== filterKelas) return false; // Dropdown Filter
                 return Object.values(row).some(val => val != null && String(val).toLowerCase().includes(searchTerm.toLowerCase()));
             });
 
@@ -1154,8 +1070,16 @@
                 setShowAddModal(true);
             };
 
+            const handleDeleteSiswa = (nisn, nama) => {
+                if(window.confirm(`Yakin ingin menghapus siswa "${nama}" (NISN: ${nisn}) secara permanen?`)) {
+                    setDbSiswa(prev => prev.filter(s => s.NISN !== nisn));
+                    apiCall('deleteSiswa', { NISN: nisn });
+                    alert("Data siswa berhasil dihapus!");
+                }
+            };
+
             const handleAddNewClick = () => {
-                setFormSiswa({ NISN: '', Nama: '', Kelas: isAdmin ? '' : userKelas, Grup: 'A', Password: '', Status_Aktif: 'TRUE' });
+                setFormSiswa({ NISN: '', Nama: '', Kelas: filterKelas || '', Grup: 'A', Password: '', Status_Aktif: 'TRUE' });
                 setIsEditing(false); 
                 setShowAddModal(true);
             };
@@ -1177,18 +1101,16 @@
                         const rowData = rows[i].split(',');
                         if (rowData.length < 6) continue; 
                         
-                        // Proteksi Kelas: Jika guru yang import, abaikan kelas di file dan paksa pakai kelas guru
                         const classFromCSV = rowData[2] ? rowData[2].trim() : '';
-                        const finalKelas = isAdmin ? classFromCSV : userKelas;
 
-                        if (finalKelas && !availableClasses.includes(finalKelas) && !importedClasses.includes(finalKelas)) {
-                            importedClasses.push(finalKelas);
+                        if (classFromCSV && !availableClasses.includes(classFromCSV) && !importedClasses.includes(classFromCSV)) {
+                            importedClasses.push(classFromCSV);
                         }
 
                         const newSiswa = {
                             NISN: rowData[0].trim(),
                             Nama: rowData[1].trim(),
-                            Kelas: finalKelas,
+                            Kelas: classFromCSV,
                             Grup: rowData[3] ? rowData[3].trim() : 'A',
                             Password: rowData[4] ? rowData[4].trim() : '12345',
                             Status_Aktif: rowData[5] ? rowData[5].trim().toUpperCase() : 'TRUE'
@@ -1214,26 +1136,35 @@
             return (
                 <div>
                     <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 gap-4 print-hidden">
-                        <h2 className="text-xl md:text-2xl font-bold text-slate-800">Manajemen Peserta Ujian</h2>
+                        <h2 className="text-xl md:text-2xl font-bold text-slate-800">Data Peserta Ujian</h2>
                         <div className="flex flex-col md:flex-row gap-2 w-full lg:w-auto">
+                            {(isAdmin || isGuruMapel) && (
+                                <select className="w-full md:w-48 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm bg-white shadow-sm" value={filterKelas} onChange={(e) => setFilterKelas(e.target.value)}>
+                                    <option value="">Semua Kelas</option>
+                                    {availableClasses.map(k => <option key={k} value={k}>{k}</option>)}
+                                </select>
+                            )}
                             <div className="relative w-full md:w-auto">
                                 <i className="fas fa-search absolute left-3 top-3 text-slate-400"></i>
                                 <input type="text" placeholder="Cari NISN, Nama..." className="w-full md:w-56 pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-sm" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                             </div>
-                            <div className="flex gap-2 w-full md:w-auto">
-                                <button onClick={() => setShowImportModal(true)} className="flex-1 md:flex-none justify-center bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow">
-                                    <i className="fas fa-upload"></i> Import CSV
-                                </button>
-                                <button onClick={handleAddNewClick} className="flex-1 md:flex-none justify-center bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow">
-                                    <i className="fas fa-user-plus"></i> Tambah Siswa
-                                </button>
-                            </div>
+                            
+                            {isAdmin && (
+                                <div className="flex gap-2 w-full md:w-auto">
+                                    <button onClick={() => setShowImportModal(true)} className="flex-1 md:flex-none justify-center bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow">
+                                        <i className="fas fa-upload"></i> Import CSV
+                                    </button>
+                                    <button onClick={handleAddNewClick} className="flex-1 md:flex-none justify-center bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow">
+                                        <i className="fas fa-user-plus"></i> Tambah Siswa
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className="bg-white rounded-xl shadow-sm border overflow-x-auto print-hidden">
-                        {!data || data.length === 0 ? (
-                            <div className="p-6 text-center text-slate-500">Tidak ada data peserta di sistem.</div>
+                        {filteredData.length === 0 ? (
+                            <div className="p-6 text-center text-slate-500">Tidak ada data peserta ditemukan.</div>
                         ) : (
                             <table className="w-full text-left text-sm whitespace-nowrap">
                                 <thead className="bg-slate-100 text-slate-600">
@@ -1242,7 +1173,7 @@
                                         <th className="p-4 border-b">Nama Siswa SD</th>
                                         <th className="p-4 border-b">Kelas</th>
                                         <th className="p-4 border-b">Status</th>
-                                        <th className="p-4 border-b text-center">Aksi</th>
+                                        {isAdmin && <th className="p-4 border-b text-center">Aksi</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1252,11 +1183,14 @@
                                             <td className="p-4 font-bold">{siswa.Nama}</td>
                                             <td className="p-4">{siswa.Kelas}</td>
                                             <td className="p-4"><span className={`px-2 py-1 rounded text-xs font-bold ${String(siswa?.Status_Aktif).toUpperCase() === 'TRUE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{String(siswa?.Status_Aktif).toUpperCase() === 'TRUE' ? 'Aktif' : 'Nonaktif'}</span></td>
-                                            <td className="p-4 text-center">
-                                                <div className="flex justify-center gap-2">
-                                                    <button onClick={() => handleEditClick(siswa)} className="bg-amber-100 text-amber-700 hover:bg-amber-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i className="fas fa-edit mr-1"></i> Edit Siswa</button>
-                                                </div>
-                                            </td>
+                                            {isAdmin && (
+                                                <td className="p-4 text-center">
+                                                    <div className="flex justify-center gap-2">
+                                                        <button onClick={() => handleEditClick(siswa)} className="bg-amber-100 text-amber-700 hover:bg-amber-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i className="fas fa-edit md:mr-1"></i> <span className="hidden md:inline">Edit</span></button>
+                                                        <button onClick={() => handleDeleteSiswa(siswa.NISN, siswa.Nama)} className="bg-red-100 text-red-700 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i className="fas fa-trash md:mr-1"></i> <span className="hidden md:inline">Hapus</span></button>
+                                                    </div>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))}
                                 </tbody>
@@ -1265,13 +1199,13 @@
                     </div>
 
                     {/* MODAL TAMBAH/EDIT PESERTA */}
-                    {showAddModal && (
+                    {showAddModal && isAdmin && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
                             <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
                                 <h3 className="text-xl font-bold mb-4 border-b pb-2">{isEditing ? 'Edit Data Siswa' : 'Tambah Data Siswa'}</h3>
                                 <form onSubmit={handleSubmitManual} className="space-y-4">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div><label className="text-sm font-bold block mb-1">NISN / Username</label><input required disabled={isEditing && !isAdmin} type="text" className={`w-full border p-2 rounded outline-none focus:ring-2 focus:ring-red-500 ${isEditing && !isAdmin ? 'bg-slate-100 text-slate-500' : ''}`} value={formSiswa.NISN || ''} onChange={(e) => setFormSiswa({...formSiswa, NISN: e.target.value})} /></div>
+                                        <div><label className="text-sm font-bold block mb-1">NISN / Username</label><input required disabled={isEditing} type="text" className={`w-full border p-2 rounded outline-none focus:ring-2 focus:ring-red-500 ${isEditing ? 'bg-slate-100 text-slate-500' : ''}`} value={formSiswa.NISN || ''} onChange={(e) => setFormSiswa({...formSiswa, NISN: e.target.value})} /></div>
                                         <div><label className="text-sm font-bold block mb-1">Password</label><input required type="text" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-red-500" value={formSiswa.Password || ''} onChange={(e) => setFormSiswa({...formSiswa, Password: e.target.value})} /></div>
                                     </div>
                                     <div><label className="text-sm font-bold block mb-1">Nama Lengkap Siswa</label><input required type="text" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-red-500" value={formSiswa.Nama || ''} onChange={(e) => setFormSiswa({...formSiswa, Nama: e.target.value})} /></div>
@@ -1279,9 +1213,8 @@
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-sm font-bold block mb-1">Kelas</label>
-                                            <select required disabled={!isAdmin} className="w-full border p-2 rounded bg-white outline-none focus:ring-2 focus:ring-red-500 disabled:bg-slate-100 disabled:text-slate-500" value={formSiswa.Kelas || ''} onChange={(e) => setFormSiswa({...formSiswa, Kelas: e.target.value})}>
+                                            <select required className="w-full border p-2 rounded bg-white outline-none focus:ring-2 focus:ring-red-500" value={formSiswa.Kelas || ''} onChange={(e) => setFormSiswa({...formSiswa, Kelas: e.target.value})}>
                                                 <option value="">-- Pilih Kelas --</option>
-                                                {(!isAdmin && userKelas && !availableClasses.includes(userKelas)) && <option value={userKelas}>{userKelas}</option>}
                                                 {availableClasses.map(num => <option key={num} value={num}>{num}</option>)}
                                             </select>
                                         </div>
@@ -1302,7 +1235,7 @@
                         </div>
                     )}
 
-                    {showImportModal && (
+                    {showImportModal && isAdmin && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
                             <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 text-center">
                                 <i className="fas fa-users text-5xl text-amber-500 mb-4"></i>
@@ -1332,7 +1265,7 @@
         /* ==========================================
            SUB KOMPONEN MANAJEMEN SOAL BERHIERARKI
            ========================================== */
-        const ManajemenSoal = ({ dbSoal, setDbSoal, user, isAdmin, apiCall, dbGuru, availableClasses }) => {
+        const ManajemenSoal = ({ dbSoal, setDbSoal, user, isAdmin, isGuruMapel, isGuruKelas, targetAkses, apiCall, dbGuru, availableClasses }) => {
             const [showModal, setShowModal] = useState(false);
             const [showImport, setShowImport] = useState(false);
             const [isEditing, setIsEditing] = useState(false);
@@ -1345,16 +1278,21 @@
                 Opsi_A: '', Opsi_B: '', Opsi_C: '', Opsi_D: '', Kunci: 'A', Media_URL: '' 
             });
 
-            const [viewStep, setViewStep] = useState(isAdmin ? 'kelas' : 'mapel'); 
-            const [selectedKelas, setSelectedKelas] = useState(isAdmin ? '' : user.Kelas_Guru);
-            const [selectedMapel, setSelectedMapel] = useState('');
+            const [viewStep, setViewStep] = useState((isAdmin || isGuruMapel) ? 'kelas' : 'mapel'); 
+            const [selectedKelas, setSelectedKelas] = useState((isAdmin || isGuruMapel) ? '' : targetAkses);
+            const [selectedMapel, setSelectedMapel] = useState(isGuruMapel ? targetAkses : '');
 
             const getKelasOfSoal = (soal) => {
                 if(!soal || !soal.Pembuat) return 'Semua';
                 const pembuatStr = String(soal.Pembuat).trim();
-                if(pembuatStr.startsWith('Administrator (')) {
-                    return pembuatStr.replace('Administrator (', '').replace(')', '').trim();
+                
+                // Cek format Pembuat "Nama (Kelas X)"
+                const match = pembuatStr.match(/\((.*?)\)$/);
+                if (match && match[1]) {
+                    return match[1].trim();
                 }
+
+                // Fallback cek di DB_Guru
                 const guru = (dbGuru || []).find(g => g && String(g.Nama_Guru).trim() === pembuatStr);
                 return guru ? String(guru.Kelas_Guru).trim() : 'Semua';
             };
@@ -1429,7 +1367,9 @@
 
             const handleSubmitManual = (e) => {
                 e.preventDefault();
-                const newSoal = { ...form, Pembuat: isEditing ? form.Pembuat : (isAdmin ? `Administrator (${selectedKelas})` : user.Nama_Guru) };
+                // Jika Mapel (Bisa semua kelas), set Pembuat = Nama Guru (Kelas 6)
+                const newPembuat = isEditing ? form.Pembuat : (isGuruKelas ? user.Nama_Guru : `${user.Nama_Guru} (${selectedKelas})`);
+                const newSoal = { ...form, Pembuat: isAdmin ? `Administrator (${selectedKelas})` : newPembuat };
                 
                 if (isEditing) {
                     setDbSoal(prev => prev.map(s => s.ID_Soal === form.ID_Soal ? newSoal : s));
@@ -1482,6 +1422,8 @@
                         const rowData = rows[i].split(',');
                         if (rowData.length < 9) continue; 
                         
+                        const newPembuat = isGuruKelas ? user.Nama_Guru : `${user.Nama_Guru} (${selectedKelas})`;
+
                         const newSoal = {
                             ID_Soal: rowData[0] || `IMP-${Date.now()}-${i}`,
                             Tipe_Soal: rowData[1] || 'Pilihan Ganda',
@@ -1493,7 +1435,7 @@
                             Opsi_D: rowData[7],
                             Kunci: rowData[8] ? rowData[8].toUpperCase().trim() : 'A',
                             Media_URL: rowData[9] || '',
-                            Pembuat: isAdmin ? `Administrator (${selectedKelas})` : user.Nama_Guru
+                            Pembuat: isAdmin ? `Administrator (${selectedKelas})` : newPembuat
                         };
                         setDbSoal(prev => [...prev, newSoal]);
                         apiCall('addSoal', newSoal);
@@ -1506,21 +1448,32 @@
             };
 
             const handleBack = () => {
-                if (viewStep === 'soal') setViewStep('mapel');
-                else if (viewStep === 'mapel' && isAdmin) setViewStep('kelas');
+                if (viewStep === 'soal') {
+                    if(isGuruMapel) setViewStep('kelas');
+                    else setViewStep('mapel');
+                }
+                else if (viewStep === 'mapel' && (isAdmin || isGuruMapel)) setViewStep('kelas');
             };
 
             return (
                 <div>
-                    {isAdmin && viewStep === 'kelas' && (
+                    {(isAdmin || isGuruMapel) && viewStep === 'kelas' && (
                         <div>
                             <h2 className="text-2xl font-bold text-slate-800 mb-2 print-hidden"><i className="fas fa-folder-open text-red-600 mr-2"></i> Verifikasi Bank Soal</h2>
                             <p className="text-slate-500 mb-8 print-hidden">Pilih kelas untuk melihat, menambah, dan memverifikasi soal pada tiap tingkatan kelas.</p>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 print-hidden">
                                 {availableClasses.map(namaKelas => {
-                                    const count = (dbSoal || []).filter(s => s && String(getKelasOfSoal(s)).trim().toLowerCase() === String(namaKelas).trim().toLowerCase()).length;
+                                    const count = (dbSoal || []).filter(s => s && String(getKelasOfSoal(s)).trim().toLowerCase() === String(namaKelas).trim().toLowerCase() && (isGuruMapel ? String(s.Topik).trim().toLowerCase() === targetAkses.toLowerCase() : true)).length;
                                     return (
-                                        <button key={namaKelas} onClick={() => { setSelectedKelas(namaKelas); setViewStep('mapel'); }} className="bg-white border-2 border-red-100 hover:border-red-500 p-6 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm transition group relative">
+                                        <button key={namaKelas} onClick={() => { 
+                                                setSelectedKelas(namaKelas); 
+                                                if(isGuruMapel) {
+                                                    setSelectedMapel(targetAkses);
+                                                    setViewStep('soal');
+                                                } else {
+                                                    setViewStep('mapel'); 
+                                                }
+                                            }} className="bg-white border-2 border-red-100 hover:border-red-500 p-6 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm transition group relative">
                                             <div className="bg-red-50 text-red-500 w-14 h-14 rounded-full flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition">
                                                 <i className="fas fa-users text-xl"></i>
                                             </div>
@@ -1536,12 +1489,12 @@
                     {viewStep === 'mapel' && (
                         <div>
                             <div className="flex items-center gap-4 mb-8 print-hidden">
-                                {isAdmin && (
+                                {(isAdmin || isGuruMapel) && (
                                     <button onClick={handleBack} className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg font-bold transition">
                                         <i className="fas fa-arrow-left mr-2"></i> Kembali
                                     </button>
                                 )}
-                                <h2 className="text-2xl font-bold text-slate-800">Mata Pelajaran {isAdmin ? `- ${selectedKelas}` : ''}</h2>
+                                <h2 className="text-2xl font-bold text-slate-800">Mata Pelajaran {(isAdmin || isGuruMapel) ? `- ${selectedKelas}` : ''}</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 print-hidden">
                                 {MAPEL_LIST.map(m => {
@@ -1569,7 +1522,7 @@
                                         <i className="fas fa-arrow-left"></i>
                                     </button>
                                     <h2 className="text-xl md:text-2xl font-bold text-slate-800">
-                                        Soal: {selectedMapel} {isAdmin ? `(${selectedKelas})` : ''}
+                                        Soal: {selectedMapel} {(isAdmin || isGuruMapel) ? `(${selectedKelas})` : ''}
                                     </h2>
                                 </div>
                                 <div className="flex gap-2 w-full md:w-auto">
@@ -1602,8 +1555,8 @@
                                                     <td className="p-4 truncate max-w-xs">{soal.Pertanyaan}</td>
                                                     <td className="p-4">
                                                         <div className="flex gap-2">
-                                                            <button onClick={() => handleEditClick(soal)} className="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-lg font-bold transition"><i className="fas fa-edit"></i> Edit</button>
-                                                            <button onClick={() => handleDeleteSoal(soal.ID_Soal)} className="bg-red-100 text-red-700 px-3 py-1.5 rounded-lg font-bold transition"><i className="fas fa-trash"></i> Hapus</button>
+                                                            <button onClick={() => handleEditClick(soal)} className="bg-amber-100 text-amber-700 hover:bg-amber-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i className="fas fa-edit md:mr-1"></i> <span className="hidden md:inline">Edit</span></button>
+                                                            <button onClick={() => handleDeleteSoal(soal.ID_Soal)} className="bg-red-100 text-red-700 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition"><i className="fas fa-trash md:mr-1"></i> <span className="hidden md:inline">Hapus</span></button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -1735,15 +1688,18 @@
         /* ==========================================
            SUB KOMPONEN HASIL UJIAN BERHIERARKI
            ========================================== */
-        const HasilUjianHierarchy = ({ dbHasil, dbSiswa, isAdmin, userKelas, availableClasses, appConfig }) => {
-            const [viewStep, setViewStep] = useState(isAdmin ? 'kelas' : 'mapel'); 
-            const [selectedKelas, setSelectedKelas] = useState(isAdmin ? '' : userKelas);
-            const [selectedMapel, setSelectedMapel] = useState('');
+        const HasilUjianHierarchy = ({ dbHasil, dbSiswa, isAdmin, isGuruMapel, isGuruKelas, targetAkses, availableClasses, appConfig }) => {
+            const [viewStep, setViewStep] = useState((isAdmin || isGuruMapel) ? 'kelas' : 'mapel'); 
+            const [selectedKelas, setSelectedKelas] = useState((isAdmin || isGuruMapel) ? '' : targetAkses);
+            const [selectedMapel, setSelectedMapel] = useState(isGuruMapel ? targetAkses : '');
             const [searchTerm, setSearchTerm] = useState('');
 
             const handleBack = () => {
-                if (viewStep === 'hasil') setViewStep('mapel');
-                else if (viewStep === 'mapel' && isAdmin) setViewStep('kelas');
+                if (viewStep === 'hasil') {
+                    if (isGuruMapel) setViewStep('kelas');
+                    else setViewStep('mapel');
+                }
+                else if (viewStep === 'mapel' && (isAdmin || isGuruMapel)) setViewStep('kelas');
             };
 
             const targetMapelSafe = `${String(selectedMapel).trim()} - ${String(selectedKelas).trim()}`.toLowerCase();
@@ -1774,12 +1730,16 @@
 
             return (
                 <div className="print:block print:w-full print:h-auto print:overflow-visible">
-                    {isAdmin && viewStep === 'kelas' && (
+                    {(isAdmin || isGuruMapel) && viewStep === 'kelas' && (
                         <div className="print-hidden">
                             <h2 className="text-2xl font-bold text-slate-800 mb-2"><i className="fas fa-chart-bar text-red-600 mr-2"></i> Hasil Ujian (Pilih Kelas)</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6">
                                 {availableClasses.map(namaKelas => (
-                                    <button key={namaKelas} onClick={() => { setSelectedKelas(namaKelas); setViewStep('mapel'); }} className="bg-white border-2 border-red-100 hover:border-red-500 p-6 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm transition group">
+                                    <button key={namaKelas} onClick={() => { 
+                                            setSelectedKelas(namaKelas); 
+                                            if(isGuruMapel) { setViewStep('hasil'); } 
+                                            else { setViewStep('mapel'); }
+                                        }} className="bg-white border-2 border-red-100 hover:border-red-500 p-6 rounded-xl flex flex-col items-center justify-center gap-3 shadow-sm transition group">
                                         <div className="bg-red-50 text-red-500 w-14 h-14 rounded-full flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition"><i className="fas fa-users text-xl"></i></div>
                                         <span className="font-bold text-lg text-slate-700">{namaKelas}</span>
                                     </button>
@@ -1791,8 +1751,8 @@
                     {viewStep === 'mapel' && (
                         <div className="print-hidden">
                             <div className="flex items-center gap-4 mb-8">
-                                {isAdmin && <button onClick={handleBack} className="bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-lg font-bold"><i className="fas fa-arrow-left"></i></button>}
-                                <h2 className="text-xl md:text-2xl font-bold text-slate-800">Hasil Ujian {isAdmin ? `- ${selectedKelas}` : ''}</h2>
+                                {(isAdmin || isGuruMapel) && <button onClick={handleBack} className="bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-lg font-bold"><i className="fas fa-arrow-left"></i></button>}
+                                <h2 className="text-xl md:text-2xl font-bold text-slate-800">Hasil Ujian {(isAdmin || isGuruMapel) ? `- ${selectedKelas}` : ''}</h2>
                             </div>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 {MAPEL_LIST.map(m => {
@@ -1855,10 +1815,10 @@
         /* ==========================================
            SUB KOMPONEN REKAPITULASI HASIL (MATRIKS)
            ========================================== */
-        const RekapitulasiHasil = ({ dbHasil, dbSiswa, isAdmin, userKelas, availableClasses, appConfig, dbGuru }) => {
-            const [selectedKelas, setSelectedKelas] = useState(isAdmin ? '' : userKelas);
+        const RekapitulasiHasil = ({ dbHasil, dbSiswa, isAdmin, isGuruMapel, isGuruKelas, targetAkses, availableClasses, appConfig, dbGuru }) => {
+            const [selectedKelas, setSelectedKelas] = useState((isAdmin || isGuruMapel) ? '' : targetAkses);
 
-            if (isAdmin && !selectedKelas) {
+            if ((isAdmin || isGuruMapel) && !selectedKelas) {
                 return (
                     <div className="print-hidden">
                         <h2 className="text-2xl font-bold text-slate-800 mb-2"><i className="fas fa-table text-red-600 mr-2"></i> Rekapitulasi Hasil Akhir</h2>
@@ -1875,10 +1835,12 @@
             }
 
             const siswaKelas = (dbSiswa || []).filter(s => s && s.Kelas === selectedKelas);
+            const mapelToDisplay = isGuruMapel ? [targetAkses] : MAPEL_LIST;
+
             const rekapData = siswaKelas.map(siswa => {
                 let row = { NISN: siswa.NISN, Nama: siswa.Nama };
                 let totalSkor = 0, mapelDikerjakan = 0;
-                MAPEL_LIST.forEach(m => {
+                mapelToDisplay.forEach(m => {
                     const targetSafe = `${String(m).trim()} - ${String(selectedKelas).trim()}`.toLowerCase();
                     const hasilSiswa = (dbHasil || []).find(h => h && String(h.NISN) === String(siswa.NISN) && h.Mapel && String(h.Mapel).trim().toLowerCase() === targetSafe);
                     if (hasilSiswa && hasilSiswa.Skor !== undefined && !isNaN(parseInt(hasilSiswa.Skor))) {
@@ -1892,19 +1854,19 @@
 
             const handleExportCSV = () => {
                 if (rekapData.length === 0) return;
-                const headers = ['NISN', 'Nama', ...MAPEL_LIST, 'Rata_Rata'];
+                const headers = ['NISN', 'Nama', ...mapelToDisplay, 'Rata_Rata'];
                 const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rekapData.map(row => headers.map(h => `"${String(row[h] || '').replace(/"/g, '""')}"`).join(","))].join("\n");
                 const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `Rekapitulasi_${selectedKelas}.csv`); link.click();
             };
 
-            const guruKelas = (dbGuru || []).find(g => g && String(g.Kelas_Guru).trim().toLowerCase() === String(selectedKelas).trim().toLowerCase());
-            const namaGuru = guruKelas ? guruKelas.Nama_Guru : '(Belum diset)';
+            const guruKelasObj = (dbGuru || []).find(g => g && String(g.Kelas_Guru).trim().toLowerCase() === String(selectedKelas).trim().toLowerCase());
+            const namaGuruTertanda = guruKelasObj ? guruKelasObj.Nama_Guru : '(Belum diset)';
 
             return (
                 <div className="print-area print:block print:w-full print:h-auto print:overflow-visible">
                     <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 print-hidden">
                         <div className="flex items-center gap-3">
-                            {isAdmin && <button onClick={() => setSelectedKelas('')} className="bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-bold"><i className="fas fa-arrow-left"></i></button>}
+                            {(isAdmin || isGuruMapel) && <button onClick={() => setSelectedKelas('')} className="bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-bold"><i className="fas fa-arrow-left"></i></button>}
                             <h2 className="text-xl md:text-2xl font-bold text-slate-800">Rekapitulasi: {selectedKelas}</h2>
                         </div>
                         <div className="flex gap-2">
@@ -1929,7 +1891,7 @@
                                     <th className="p-4 print:p-1 border-b font-bold sticky left-0 bg-slate-100 z-10 w-12 print:static print:w-auto">No</th>
                                     <th className="p-4 print:p-1 border-b font-bold sticky left-12 bg-slate-100 z-10 w-24 print:static print:w-auto">NISN</th>
                                     <th className="p-4 print:p-1 border-b font-bold sticky left-36 bg-slate-100 z-10 shadow-[1px_0_2px_rgba(0,0,0,0.05)] print:static print:shadow-none print:w-auto">Nama Siswa</th>
-                                    {MAPEL_LIST.map(m => <th key={m} className="p-4 print:p-1 border-b font-bold text-center">{m}</th>)}
+                                    {mapelToDisplay.map(m => <th key={m} className="p-4 print:p-1 border-b font-bold text-center">{m}</th>)}
                                     <th className="p-4 print:p-1 border-b font-bold text-center text-blue-600 bg-blue-50 print:bg-white print:text-black">Rata-rata</th>
                                 </tr>
                             </thead>
@@ -1939,11 +1901,11 @@
                                         <td className="p-4 print:p-1 font-bold sticky left-0 bg-white z-10 w-12 print:static print:w-auto">{i+1}</td>
                                         <td className="p-4 print:p-1 font-mono sticky left-12 bg-white z-10 w-24 print:static print:w-auto">{row.NISN}</td>
                                         <td className="p-4 print:p-1 font-bold sticky left-36 bg-white z-10 shadow-[1px_0_2px_rgba(0,0,0,0.05)] print:static print:shadow-none print:w-auto">{row.Nama}</td>
-                                        {MAPEL_LIST.map(m => <td key={m} className={`p-4 print:p-1 text-center font-medium ${row[m] === '-' ? 'text-slate-300' : 'text-slate-700 print:text-black'}`}>{row[m]}</td>)}
+                                        {mapelToDisplay.map(m => <td key={m} className={`p-4 print:p-1 text-center font-medium ${row[m] === '-' ? 'text-slate-300' : 'text-slate-700 print:text-black'}`}>{row[m]}</td>)}
                                         <td className="p-4 print:p-1 text-center font-black text-blue-600 bg-blue-50/30 print:bg-white print:text-black">{row.Rata_Rata}</td>
                                     </tr>
                                 )) : (
-                                    <tr><td colSpan={MAPEL_LIST.length + 4} className="p-6 text-center text-slate-500">Tidak ada data siswa.</td></tr>
+                                    <tr><td colSpan={mapelToDisplay.length + 4} className="p-6 text-center text-slate-500">Tidak ada data siswa.</td></tr>
                                 )}
                             </tbody>
                         </table>
@@ -1951,7 +1913,7 @@
                         <div className="print-visible mt-12 flex justify-end text-black">
                             <div className="text-center mr-10">
                                 <p className="mb-16">Mengetahui,</p>
-                                <p className="font-bold underline uppercase">{namaGuru}</p>
+                                <p className="font-bold underline uppercase">{namaGuruTertanda}</p>
                                 <p>Wali {selectedKelas}</p>
                             </div>
                         </div>
@@ -2231,7 +2193,7 @@
                     const diff = Math.floor((endTime - now) / 1000);
                     return diff > 0 ? diff : 0;
                 } catch(e) {
-                    return parseInt(examData?.Durasi) * 60 || 0; // Fallback
+                    return parseInt(examData?.Durasi) * 60 || 0; // Fallback jika format salah
                 }
             };
             
