@@ -65,14 +65,21 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbxfVijQibVnQ-H0B-PgQto6n8c8qy1gIOEHmjy-nSngnXCT0FKCqI2ouoaEw2XW8UfZ/exec";
+        // ==========================================
+        // PASTE URL DEPLOY APP SCRIPT ANDA DI BAWAH INI
+        // ==========================================
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw-xMGf1c1q1eDKY0LYju5T2xJSkkGOmEvcCNU4_aD6rQE7h7LyfdtHIqHlkJH_YLDk/exec";
 
         const getSafeImageUrl = (url) => {
             if (!url) return '';
             let str = String(url).trim();
+            // Konversi link Google Drive agar bisa langsung tampil tanpa error
             if (str.includes('drive.google.com')) {
                 const match = str.match(/id=([a-zA-Z0-9_-]+)/) || str.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+                if (match && match[1]) {
+                    // MENGGUNAKAN SERVER LH3 GOOGLE UNTUK MENCEGAH BLOKIR GAMBAR
+                    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+                }
             }
             return str;
         };
@@ -85,6 +92,7 @@
 
         const MAPEL_LIST = ['PAI', 'PKN', 'B.INDONESIA', 'MATEMATIKA', 'IPAS', 'PJOK', 'SENI', 'B.INGGRIS'];
         const SESI_LIST = ['SESI 1', 'SESI 2', 'SESI 3', 'SESI 4'];
+        const NAMA_SEKOLAH_FIXED = "SD NEGERI 31 DAMPELAS"; // Edit nama sekolah permanen di sini
 
         const { useState, useEffect, useRef } = React;
 
@@ -103,7 +111,6 @@
             const [appConfig, setAppConfig] = useState(() => {
                 const saved = localStorage.getItem('tka_app_config');
                 return saved ? JSON.parse(saved) : { 
-                    namaSekolah: 'SD NEGERI 1 MERAH PUTIH', 
                     namaUjian: 'Ujian Akhir Semester', 
                     logo: '', loginBackground: '',
                     daftarRombel: 'Kelas 1,Kelas 2,Kelas 3,Kelas 4,Kelas 5,Kelas 6',
@@ -186,7 +193,7 @@
             return (
                 <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
                     {view === 'login' && <LoginScreen onLogin={handleLogin} dbSiswa={dbSiswa} dbGuru={dbGuru} appConfig={appConfig} />}
-                    {view === 'admin' && <DashboardPortal user={currentUser} onLogout={handleLogout} data={{dbSiswa, dbSoal, dbJadwal, dbHasil, dbGuru}} refreshData={() => window.location.reload()} apiCall={executeApiAction} setDbSoal={setDbSoal} setDbGuru={setDbGuru} setDbSiswa={setDbSiswa} setDbJadwal={setDbJadwal} appConfig={appConfig} setAppConfig={setAppConfig} />}
+                    {view === 'admin' && <DashboardPortal user={currentUser} onLogout={handleLogout} data={{dbSiswa, dbSoal, dbJadwal, dbHasil, dbGuru}} refreshData={() => window.location.reload()} apiCall={executeApiAction} setDbSoal={setDbSoal} setDbGuru={setDbGuru} setDbSiswa={setDbSiswa} setDbJadwal={setDbJadwal} setDbHasil={setDbHasil} appConfig={appConfig} setAppConfig={setAppConfig} />}
                     {view === 'siswa' && <StudentPortal user={currentUser} onLogout={handleLogout} dbJadwal={dbJadwal} dbHasil={dbHasil} appConfig={appConfig} onStartExam={(e) => {setActiveExam(e); setView('exam');}} />}
                     {view === 'exam' && (
                         <ExamEngine user={currentUser} examData={activeExam} dbSoal={dbSoal} dbGuru={dbGuru} appConfig={appConfig} onFinish={async (hasil) => { 
@@ -325,7 +332,7 @@
                         <div className="flex flex-col items-center mb-6 text-center">
                             {appConfig.logo ? <img src={getSafeImageUrl(appConfig.logo)} alt="Logo Sekolah" className="h-24 mb-3 object-contain drop-shadow-md" onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/150x150?text=Logo'; }} /> : <div className="bg-red-50 p-4 rounded-full mb-3 text-red-700 text-3xl shadow-sm"><i className="fas fa-graduation-cap"></i></div>}
                             <h1 className="text-2xl font-black text-slate-900 drop-shadow-sm">{appConfig.namaUjian}</h1>
-                            <p className="text-slate-900 text-sm font-bold mt-1 drop-shadow-sm">{appConfig.namaSekolah}</p>
+                            <p className="text-slate-900 text-sm font-bold mt-1 drop-shadow-sm">{NAMA_SEKOLAH_FIXED}</p>
                         </div>
                         {error && <div className="bg-red-100/90 text-red-600 p-3 rounded-lg mb-4 text-sm font-medium border border-red-200 shadow-sm"><i className="fas fa-exclamation-triangle mr-2"></i>{error}</div>}
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -347,7 +354,7 @@
         /* ==========================================
            DASHBOARD PORTAL (ADMIN & GURU)
            ========================================== */
-        const DashboardPortal = ({ user, onLogout, data, refreshData, apiCall, setDbSoal, setDbGuru, setDbSiswa, setDbJadwal, appConfig, setAppConfig }) => {
+        const DashboardPortal = ({ user, onLogout, data, refreshData, apiCall, setDbSoal, setDbGuru, setDbSiswa, setDbJadwal, setDbHasil, appConfig, setAppConfig }) => {
             const [activeTab, setActiveTab] = useState('dashboard');
             const [showPwdModal, setShowPwdModal] = useState(false);
             
@@ -477,7 +484,7 @@
                             
                             {activeTab === 'soal' && <ManajemenSoal dbSoal={dbSoal} setDbSoal={setDbSoal} user={user} isAdmin={isAdmin} isGuruMapel={isGuruMapel} isGuruKelas={isGuruKelas} targetAkses={targetAkses} apiCall={apiCall} dbGuru={dbGuru} availableClasses={availableClasses} />}
                             {activeTab === 'siswa' && <DataPeserta data={dbSiswa} setDbSiswa={setDbSiswa} apiCall={apiCall} isAdmin={isAdmin} isGuruMapel={isGuruMapel} targetAkses={targetAkses} availableClasses={availableClasses} appConfig={appConfig} setAppConfig={setAppConfig} />}
-                            {activeTab === 'hasil' && <HasilUjianHierarchy dbHasil={dbHasil} dbSiswa={dbSiswa} isAdmin={isAdmin} isGuruMapel={isGuruMapel} isGuruKelas={isGuruKelas} targetAkses={targetAkses} availableClasses={availableClasses} appConfig={appConfig} />}
+                            {activeTab === 'hasil' && <HasilUjianHierarchy dbHasil={dbHasil} setDbHasil={setDbHasil} apiCall={apiCall} dbSiswa={dbSiswa} isAdmin={isAdmin} isGuruMapel={isGuruMapel} isGuruKelas={isGuruKelas} targetAkses={targetAkses} availableClasses={availableClasses} appConfig={appConfig} />}
                             {activeTab === 'rekap' && <RekapitulasiHasil dbHasil={dbHasil} dbSiswa={dbSiswa} isAdmin={isAdmin} isGuruMapel={isGuruMapel} isGuruKelas={isGuruKelas} targetAkses={targetAkses} availableClasses={availableClasses} appConfig={appConfig} dbGuru={dbGuru} />}
                             
                             {activeTab === 'rombel' && isAdmin && <ManajemenRombel dbSiswa={dbSiswa} setDbSiswa={setDbSiswa} apiCall={apiCall} availableClasses={availableClasses} appConfig={appConfig} setAppConfig={setAppConfig} />}
@@ -674,7 +681,6 @@
            SUB KOMPONEN PENGATURAN SISTEM
            ========================================== */
         const PengaturanSistem = ({ appConfig, setAppConfig, dbJadwal, setDbJadwal, apiCall, isAdmin, userKelas, availableClasses }) => {
-            const [namaSekolah, setNamaSekolah] = useState(appConfig.namaSekolah || '');
             const [namaUjian, setNamaUjian] = useState(appConfig.namaUjian || '');
             const [logoBase64, setLogoBase64] = useState(appConfig.logo || '');
             const [loginBgBase64, setLoginBgBase64] = useState(appConfig.loginBackground || '');
@@ -687,7 +693,7 @@
 
             const handleSaveIdentitas = (e) => {
                 e.preventDefault();
-                const newConf = { ...appConfig, namaSekolah, namaUjian, logo: logoBase64, loginBackground: loginBgBase64, adminUser, adminPass };
+                const newConf = { ...appConfig, namaUjian, logo: logoBase64, loginBackground: loginBgBase64, adminUser, adminPass };
                 setAppConfig(newConf);
                 apiCall('saveConfig', newConf);
                 alert("Identitas, Latar Belakang & Akses Admin berhasil disimpan permanen di Cloud!");
@@ -775,7 +781,8 @@
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-bold mb-1">Nama Sekolah</label>
-                                        <input type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-red-500 outline-none" value={namaSekolah || ''} onChange={e=>setNamaSekolah(e.target.value)} />
+                                        <input disabled type="text" className="w-full border p-2 rounded bg-slate-100 font-bold text-slate-400 focus:outline-none cursor-not-allowed" value={NAMA_SEKOLAH_FIXED} />
+                                        <p className="text-[10px] text-red-500 mt-1 font-bold">*Edit nama sekolah langsung di kode HTML</p>
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold mb-1">Judul / Nama Ujian</label>
@@ -957,7 +964,7 @@
                                             {appConfig.logo && <img src={getSafeImageUrl(appConfig.logo)} className="print-logo h-8 object-contain" />}
                                             <div className="text-center">
                                                 <h2 className="print-title text-sm font-black uppercase text-black">{appConfig.namaUjian}</h2>
-                                                <p className="print-subtitle text-[9px] font-bold uppercase text-black">{appConfig.namaSekolah}</p>
+                                                <p className="print-subtitle text-[9px] font-bold uppercase text-black">{NAMA_SEKOLAH_FIXED}</p>
                                             </div>
                                         </div>
                                         
@@ -1688,7 +1695,7 @@
         /* ==========================================
            SUB KOMPONEN HASIL UJIAN BERHIERARKI
            ========================================== */
-        const HasilUjianHierarchy = ({ dbHasil, dbSiswa, isAdmin, isGuruMapel, isGuruKelas, targetAkses, availableClasses, appConfig }) => {
+        const HasilUjianHierarchy = ({ dbHasil, setDbHasil, apiCall, dbSiswa, isAdmin, isGuruMapel, isGuruKelas, targetAkses, availableClasses, appConfig }) => {
             const [viewStep, setViewStep] = useState((isAdmin || isGuruMapel) ? 'kelas' : 'mapel'); 
             const [selectedKelas, setSelectedKelas] = useState((isAdmin || isGuruMapel) ? '' : targetAkses);
             const [selectedMapel, setSelectedMapel] = useState(isGuruMapel ? targetAkses : '');
@@ -1709,6 +1716,13 @@
                 if (!searchTerm) return true;
                 return Object.values(row).some(val => val != null && String(val).toLowerCase().includes(searchTerm.toLowerCase()));
             });
+
+            const handleDeleteNilai = (nisn, mapel, timestamp) => {
+                if(window.confirm(`Yakin ingin menghapus nilai ini secara permanen?\nNISN: ${nisn}\nMapel: ${mapel}`)) {
+                    setDbHasil(prev => prev.filter(h => !(h.NISN === nisn && h.Mapel === mapel && h.Timestamp === timestamp)));
+                    apiCall('deleteHasil', { NISN: nisn, Mapel: mapel, Timestamp: timestamp });
+                }
+            };
 
             const handleExportCSV = () => {
                 if (displayHasil.length === 0) return alert("Tidak ada data untuk diekspor");
@@ -1791,18 +1805,40 @@
                                 <div className="print-visible text-center mb-6 border-b-2 border-black pb-4 mt-6">
                                     <h2 className="text-2xl font-black text-black uppercase">Daftar Nilai Hasil Ujian</h2>
                                     <h3 className="text-lg font-bold text-black mt-1">MATA PELAJARAN: {selectedMapel} - KELAS: {selectedKelas}</h3>
-                                    <p className="text-sm font-medium mt-1 uppercase">{appConfig?.namaSekolah || 'Sekolah'}</p>
+                                    <p className="text-sm font-medium mt-1 uppercase">{NAMA_SEKOLAH_FIXED}</p>
                                 </div>
                                 <table className="w-full text-left text-sm whitespace-nowrap">
-                                    <thead className="bg-slate-100 text-slate-600"><tr><th className="p-4 border-b">No</th><th className="p-4 border-b">Waktu Submit</th><th className="p-4 border-b">NISN</th><th className="p-4 border-b">Nama Siswa</th><th className="p-4 border-b">Mapel Sesi</th><th className="p-4 border-b text-center">Skor Akhir</th></tr></thead>
+                                    <thead className="bg-slate-100 text-slate-600">
+                                        <tr>
+                                            <th className="p-4 border-b">No</th>
+                                            <th className="p-4 border-b">Waktu Submit</th>
+                                            <th className="p-4 border-b">NISN</th>
+                                            <th className="p-4 border-b">Nama Siswa</th>
+                                            <th className="p-4 border-b">Mapel Sesi</th>
+                                            <th className="p-4 border-b text-center">Skor Akhir</th>
+                                            <th className="p-4 border-b text-center print-hidden">Aksi</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         {displayHasil.map((row, i) => {
                                             const siswa = (dbSiswa || []).find(s => String(s.NISN) === String(row.NISN));
                                             return (
-                                                <tr key={i} className="hover:bg-slate-50 border-b"><td className="p-4 font-bold">{i+1}</td><td className="p-4">{row.Timestamp}</td><td className="p-4 font-mono font-bold">{row.NISN}</td><td className="p-4 font-bold text-slate-800">{siswa ? siswa.Nama : '-'}</td><td className="p-4">{row.Mapel}</td><td className="p-4 text-center font-black text-blue-600 text-lg">{row.Skor}</td></tr>
+                                                <tr key={i} className="hover:bg-slate-50 border-b">
+                                                    <td className="p-4 font-bold">{i+1}</td>
+                                                    <td className="p-4">{row.Timestamp}</td>
+                                                    <td className="p-4 font-mono font-bold">{row.NISN}</td>
+                                                    <td className="p-4 font-bold text-slate-800">{siswa ? siswa.Nama : '-'}</td>
+                                                    <td className="p-4">{row.Mapel}</td>
+                                                    <td className="p-4 text-center font-black text-blue-600 text-lg">{row.Skor}</td>
+                                                    <td className="p-4 text-center print-hidden">
+                                                        <button onClick={() => handleDeleteNilai(row.NISN, row.Mapel, row.Timestamp)} className="bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                                                            <i className="fas fa-trash"></i> Hapus
+                                                        </button>
+                                                    </td>
+                                                </tr>
                                             );
                                         })}
-                                        {displayHasil.length === 0 && <tr><td colSpan="6" className="p-6 text-center text-slate-500">Belum ada data nilai.</td></tr>}
+                                        {displayHasil.length === 0 && <tr><td colSpan="7" className="p-6 text-center text-slate-500">Belum ada data nilai.</td></tr>}
                                     </tbody>
                                 </table>
                             </div>
@@ -1883,7 +1919,7 @@
                         <div className="print-visible text-center mb-6 border-b-2 border-black pb-4 mt-6">
                             <h2 className="text-2xl font-black text-black uppercase">Rekapitulasi Nilai Akhir</h2>
                             <h3 className="text-lg font-bold text-black mt-1">KELAS: {selectedKelas}</h3>
-                            <p className="text-sm font-medium mt-1 uppercase">{appConfig?.namaSekolah || 'Sekolah'}</p>
+                            <p className="text-sm font-medium mt-1 uppercase">{NAMA_SEKOLAH_FIXED}</p>
                         </div>
                         <table className="w-full text-left text-sm whitespace-nowrap md:min-w-max print:whitespace-normal print:min-w-full rekap-table">
                             <thead className="bg-slate-100 text-slate-600">
@@ -1918,96 +1954,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            );
-        };
-
-        /* ==========================================
-           LAPORAN BERITA ACARA (HANYA ADMIN)
-           ========================================== */
-        const LaporanBeritaAcara = ({ dbJadwal, dbSiswa, dbHasil, appConfig }) => {
-            const [selectedTes, setSelectedTes] = useState('');
-            const [isPrinting, setIsPrinting] = useState(false);
-
-            if (!dbJadwal || dbJadwal.length === 0) return <div className="p-6 bg-white rounded-xl border text-slate-500">Belum ada jadwal ujian di kelas ini.</div>;
-            
-            const jadwalAktif = dbJadwal.find(j => j && j.ID_Tes === selectedTes);
-            
-            let daftarHadir = jadwalAktif ? (dbSiswa || []).filter(s => s).map(siswa => {
-                const mapelJadwalSafe = String(jadwalAktif.Mapel).trim().toLowerCase();
-                const hasilSiswa = (dbHasil || []).find(h => h && String(h.NISN) === String(siswa.NISN) && h.Mapel && String(h.Mapel).trim().toLowerCase() === mapelJadwalSafe);
-                return { 
-                    ...siswa, 
-                    hadir: !!hasilSiswa, 
-                    skor: hasilSiswa ? hasilSiswa.Skor : '-', 
-                    timestamp: hasilSiswa ? hasilSiswa.Timestamp : '-' 
-                };
-            }) : [];
-
-            return (
-                <div>
-                    <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-6 print-hidden">Laporan & Berita Acara</h2>
-                    <div className="bg-white p-6 rounded-xl shadow-sm border mb-6 print-hidden">
-                        <select className="w-full max-w-md px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none bg-white" value={selectedTes} onChange={(e) => setSelectedTes(e.target.value)}>
-                            <option value="">-- Pilih Ujian Dicetak --</option>
-                            {(dbJadwal || []).filter(j => j).map((j, i) => <option key={i} value={j.ID_Tes}>{j.Mapel} - {j.Waktu_Mulai}</option>)}
-                        </select>
-                        {jadwalAktif && <button onClick={() => setIsPrinting(true)} className="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-700 w-full md:w-auto"><i className="fas fa-print mr-2"></i> Preview Cetak</button>}
-                    </div>
-
-                    {isPrinting && jadwalAktif && (
-                        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 print:bg-white print:static print:block">
-                            <div className="min-h-screen flex justify-center p-6 print:p-0 print:min-h-0">
-                                <div className="bg-white p-10 rounded-xl max-w-4xl w-full print:shadow-none print:w-full print:p-0">
-                                    <div className="border-b-4 border-double border-black pb-4 mb-6 flex items-center gap-6">
-                                        {appConfig.logo ? <img src={getSafeImageUrl(appConfig.logo)} alt="Logo Sekolah" className="h-20 object-contain print:block" /> : <div className="h-20 w-20 bg-slate-100 flex items-center justify-center border border-black"><span className="text-xs">Logo</span></div>}
-                                        <div className="flex-1 text-center pr-20">
-                                            <h1 className="text-2xl font-black uppercase print:text-black">{appConfig.namaSekolah}</h1>
-                                            <p className="text-sm font-bold uppercase print:text-black">{appConfig.namaUjian}</p>
-                                            <p className="text-xs font-medium print:text-black">Laporan Resmi Evaluasi & Pelaksanaan Ujian</p>
-                                        </div>
-                                    </div>
-                                    <h2 className="text-xl font-bold text-center underline uppercase mb-6 print:text-black">Berita Acara Pelaksanaan Ujian</h2>
-                                    <div className="text-sm space-y-2 mb-8 print:text-black">
-                                        <p>Pada hari ini, telah dilaksanakan evaluasi akademik secara digital untuk sesi ujian berikut:</p>
-                                        <table className="mt-4 ml-4">
-                                            <tbody>
-                                                <tr><td className="w-40 font-bold">Mata Pelajaran / Kelas</td><td>: {jadwalAktif.Mapel}</td></tr>
-                                                <tr><td className="font-bold">Waktu Mulai</td><td>: {jadwalAktif.Waktu_Mulai}</td></tr>
-                                                <tr><td className="font-bold">Durasi Ujian</td><td>: {jadwalAktif.Durasi} Menit</td></tr>
-                                                <tr><td className="font-bold">Total Terdaftar</td><td>: {daftarHadir.length} Siswa</td></tr>
-                                                <tr><td className="font-bold">Hadir Ujian</td><td>: {daftarHadir.filter(s => s.hadir).length} Siswa</td></tr>
-                                                <tr><td className="font-bold">Tidak Hadir</td><td>: {daftarHadir.filter(s => !s.hadir).length} Siswa</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <table className="w-full text-sm border-collapse border border-black mb-10 print:text-black">
-                                        <thead>
-                                            <tr><th className="border border-black p-2 bg-slate-100 print:bg-white w-12">No</th><th className="border border-black p-2 bg-slate-100 print:bg-white">NISN</th><th className="border border-black p-2 bg-slate-100 print:bg-white">Nama Siswa</th><th className="border border-black p-2 bg-slate-100 print:bg-white text-center">Kelas</th><th className="border border-black p-2 bg-slate-100 print:bg-white text-center">Kehadiran</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            {daftarHadir.map((siswa, idx) => (
-                                                <tr key={idx}>
-                                                    <td className="border border-black p-2 text-center">{idx + 1}</td><td className="border border-black p-2 font-mono">{siswa.NISN}</td><td className="border border-black p-2">{siswa.Nama}</td><td className="border border-black p-2 text-center">{siswa.Kelas}</td>
-                                                    <td className="border border-black p-2 text-center">{siswa.hadir ? <span className="font-bold text-green-600">Hadir</span> : <span className="font-bold text-red-600">Absen</span>}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                    <div className="flex justify-end mt-12 print:text-black">
-                                        <div className="text-center">
-                                            <p className="mb-16">Pengawas Ruangan,</p>
-                                            <p className="font-bold underline">___________________________</p>
-                                        </div>
-                                    </div>
-                                    <div className="mt-10 flex gap-4 print-hidden border-t pt-6">
-                                        <button onClick={() => setIsPrinting(false)} className="px-6 py-2 bg-slate-200 rounded-lg font-bold">Tutup</button>
-                                        <button onClick={()=>window.print()} className="flex-1 bg-red-600 text-white rounded-lg font-bold"><i className="fas fa-print"></i> Cetak Berita Acara</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             );
         };
@@ -2202,7 +2148,7 @@
             const isImageUrl = (val) => {
                 if (!val) return false;
                 const str = String(val).trim();
-                return str.startsWith('http') || str.startsWith('data:image');
+                return str.startsWith('http') || str.startsWith('data:image') || str.startsWith('https');
             };
 
             const mapelUtama = examData && examData.Mapel ? String(examData.Mapel).split(' - ')[0].trim() : '';
