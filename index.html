@@ -68,7 +68,7 @@
         // ==========================================
         // PASTE URL DEPLOY APP SCRIPT ANDA DI BAWAH INI
         // ==========================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbw-xMGf1c1q1eDKY0LYju5T2xJSkkGOmEvcCNU4_aD6rQE7h7LyfdtHIqHlkJH_YLDk/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwiWtEIyV3oE0VzJjUqBCGr2nKpSBqy3KmMZhkqOf36CCugIUR3yD6Qxkbm0mpnKBPT/exec";
 
         const getSafeImageUrl = (url) => {
             if (!url) return '';
@@ -1717,12 +1717,21 @@
                 return Object.values(row).some(val => val != null && String(val).toLowerCase().includes(searchTerm.toLowerCase()));
             });
 
-            const handleDeleteNilai = (nisn, mapel, timestamp) => {
-                if(window.confirm(`Yakin ingin menghapus nilai ini secara permanen?\nNISN: ${nisn}\nMapel: ${mapel}`)) {
-                    setDbHasil(prev => prev.filter(h => !(h.NISN === nisn && h.Mapel === mapel && h.Timestamp === timestamp)));
-                    apiCall('deleteHasil', { NISN: nisn, Mapel: mapel, Timestamp: timestamp });
-                }
-            };
+            const handleDeleteNilai = async (nisn, mapel, timestamp) => {
+    if(window.confirm(`Yakin ingin menghapus nilai ini secara permanen?\nNISN: ${nisn}\nMapel: ${mapel}`)) {
+        
+        // Memanggil API dan menunggu hasilnya
+        const res = await apiCall('deleteHasil', { NISN: nisn, Mapel: mapel, Timestamp: timestamp });
+        
+        // Mengecek apakah server berhasil menghapus data
+        if (res && res.status === 'success') {
+            setDbHasil(prev => prev.filter(h => !(h.NISN === nisn && h.Mapel === mapel && h.Timestamp === timestamp)));
+            alert("Data nilai berhasil dihapus dari server!");
+        } else {
+            alert("GAGAL menghapus data. Periksa Google Apps Script Anda. Pesan Error: " + (res?.message || "Koneksi bermasalah."));
+        }
+    }
+};
 
             const handleExportCSV = () => {
                 if (displayHasil.length === 0) return alert("Tidak ada data untuk diekspor");
